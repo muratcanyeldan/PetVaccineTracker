@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Pet Detail Activity -->
+    <item name="petNameText" type="id"/>
+    <item name="petTypeChip" type="id"/>
+    <item name="petBreedText" type="id"/>
+    <item name="petDobText" type="id"/>
+    <item name="vaccinesRecyclerView" type="id"/>
+    <item name="emptyVaccinesView" type="id"/>
+    <item name="addVaccineFab" type="id"/>
+    <item name="toolbar" type="id"/>
+    
+    <!-- Vaccine Item -->
+    <item name="vaccineNameText" type="id"/>
+    <item name="vaccineStatusChip" type="id"/>
+    <item name="vaccineDateText" type="id"/>
+    <item name="nextDueDateText" type="id"/>
+    <item name="notesDivider" type="id"/>
+    <item name="vaccineNotesText" type="id"/>
+    
+    <!-- Add Vaccine Dialog -->
+    <item name="vaccineNameInput" type="id"/>
+    <item name="vaccineDateInput" type="id"/>
+    <item name="recurringCheckbox" type="id"/>
+    <item name="recurringContainer" type="id"/>
+    <item name="monthsSpinner" type="id"/>
+    <item name="vaccineNotesInput" type="id"/>
+    <item name="cancelButton" type="id"/>
+    <item name="saveButton" type="id"/>
+</resources> 
