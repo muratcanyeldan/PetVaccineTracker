@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pet_types">
+        <item>Dog</item>
+        <item>Cat</item>
+    </string-array>
+
+    <string-array name="recurring_options">
+        <item>One Time Only</item>
+        <item>Recurring</item>
+    </string-array>
+
+    <string-array name="months_array">
+        <item>1 month</item>
+        <item>2 months</item>
+        <item>3 months</item>
+        <item>6 months</item>
+        <item>12 months</item>
+    </string-array>
+</resources> 

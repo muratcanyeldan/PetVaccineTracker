@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">Pet Vaccine Tracker</string>
+    
+    <!-- Vaccine item strings -->
+    <string name="vaccine_date_format">Date: %s</string>
+    <string name="vaccine_next_due_format">Next due: %s</string>
+    <string name="vaccine_notes_format">Notes: %s</string>
+    
+    <!-- Empty state messages -->
+    <string name="no_vaccines_added">No vaccines added yet</string>
+    <string name="no_pets_added">No pets added yet\nTap + to add a pet</string>
+    
+    <!-- Dialog titles -->
+    <string name="add_vaccine">Add Vaccine</string>
+    <string name="edit_vaccine">Edit Vaccine</string>
+    <string name="add_pet">Add Pet</string>
+    <string name="edit_pet">Edit Pet</string>
+    
+    <!-- Button labels -->
+    <string name="action_add">Add</string>
+    <string name="action_update">Update</string>
+    <string name="action_cancel">Cancel</string>
+    
+    <!-- Error messages -->
+    <string name="error_required_fields">Please fill in all required fields</string>
+    <string name="error_processing_date">Error processing date</string>
+    <string name="error_loading_vaccines">Error loading vaccines: %s</string>
+    <string name="error_pet_not_found">Error: Pet details not found</string>
+    <string name="error_loading_pets">Error loading pets: %s</string>
+    
+    <!-- Success messages -->
+    <string name="success_vaccine_added">Vaccine added successfully</string>
+    <string name="success_vaccine_updated">Vaccine updated successfully</string>
+    
+    <!-- Headers -->
+    <string name="header_my_pets">My Pets</string>
+    <string name="header_pet_details">Pet Details</string>
+    <string name="header_vaccines">Vaccines</string>
+    
+    <!-- Vaccine strings -->
+    <string name="vaccine_administered_date">Administered: %s</string>
+    <string name="vaccine_not_administered">Not administered yet</string>
+    <string name="vaccine_recommended_date">Recommended date: %s</string>
+    <string name="vaccine_due_date">Due: %s</string>
+</resources>
