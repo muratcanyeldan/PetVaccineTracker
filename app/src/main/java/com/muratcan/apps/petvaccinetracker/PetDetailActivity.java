@@ -6,24 +6,27 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.muratcan.apps.petvaccinetracker.adapter.VaccineAdapter;
 import com.muratcan.apps.petvaccinetracker.database.AppDatabase;
 import com.muratcan.apps.petvaccinetracker.model.Pet;
 import com.muratcan.apps.petvaccinetracker.model.Vaccine;
 import com.muratcan.apps.petvaccinetracker.util.FirebaseHelper;
-import com.muratcan.apps.petvaccinetracker.util.NotificationHelper;
 import com.muratcan.apps.petvaccinetracker.util.Logger;
+import com.muratcan.apps.petvaccinetracker.util.NotificationHelper;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -174,14 +177,14 @@ public class PetDetailActivity extends AppCompatActivity {
 
     private void initializeViews() {
         TextView petNameText = findViewById(R.id.petNameText);
-        TextView petTypeText = findViewById(R.id.petTypeText);
+        Chip petTypeChip = findViewById(R.id.petTypeChip);
         TextView petBreedText = findViewById(R.id.petBreedText);
         TextView petDobText = findViewById(R.id.petDobText);
         vaccinesRecyclerView = findViewById(R.id.vaccinesRecyclerView);
-        FloatingActionButton addVaccineFab = findViewById(R.id.addVaccineFab);
+        ExtendedFloatingActionButton addVaccineFab = findViewById(R.id.addVaccineFab);
 
         petNameText.setText(pet.getName());
-        petTypeText.setText(pet.getType());
+        petTypeChip.setText(pet.getType());
         petBreedText.setText(pet.getBreed());
         petDobText.setText(pet.getDateOfBirth());
 
@@ -226,11 +229,24 @@ public class PetDetailActivity extends AppCompatActivity {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_vaccine, null);
         EditText nameInput = dialogView.findViewById(R.id.vaccineNameInput);
         EditText dateInput = dialogView.findViewById(R.id.vaccineDateInput);
-        CheckBox recurringCheckbox = dialogView.findViewById(R.id.recurringCheckbox);
+        com.google.android.material.switchmaterial.SwitchMaterial recurringCheckbox = dialogView.findViewById(R.id.recurringCheckbox);
         View recurringContainer = dialogView.findViewById(R.id.recurringContainer);
-        Spinner monthsSpinner = dialogView.findViewById(R.id.monthsSpinner);
+        com.google.android.material.textfield.MaterialAutoCompleteTextView monthsSpinner = dialogView.findViewById(R.id.monthsSpinner);
         EditText notesInput = dialogView.findViewById(R.id.vaccineNotesInput);
 
+        // Set up months spinner
+        String[] monthsArray = getResources().getStringArray(R.array.months_array);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.item_dropdown_menu, monthsArray);
+        monthsSpinner.setAdapter(adapter);
+        
+        // Make it non-editable but clickable
+        monthsSpinner.setFocusable(false);
+        monthsSpinner.setFocusableInTouchMode(false);
+        monthsSpinner.setText(monthsArray[0], false); // Set default value without filtering
+        
+        // Enable dropdown on click
+        monthsSpinner.setOnClickListener(v -> monthsSpinner.showDropDown());
+        
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(existingVaccine != null ? "Edit Vaccine" : "Add Vaccine")
             .setView(dialogView)
@@ -238,7 +254,7 @@ public class PetDetailActivity extends AppCompatActivity {
                 String name = nameInput.getText().toString().trim();
                 String dateStr = dateInput.getText().toString().trim();
                 boolean isRecurring = recurringCheckbox.isChecked();
-                int months = isRecurring ? Integer.parseInt(monthsSpinner.getSelectedItem().toString().split(" ")[0]) : 0;
+                int months = isRecurring ? Integer.parseInt(monthsSpinner.getText().toString().split(" ")[0]) : 0;
                 String notes = notesInput.getText().toString().trim();
 
                 if (name.isEmpty() || dateStr.isEmpty()) {
@@ -280,9 +296,6 @@ public class PetDetailActivity extends AppCompatActivity {
                                         vaccine.getName(),
                                         vaccine.getNextDueDate()
                                     );
-                                    Logger.info(TAG, String.format(Locale.getDefault(),
-                                        "Scheduled recurring vaccine notification for pet: %s, vaccine: %s, next due: %s",
-                                        pet.getName(), vaccine.getName(), vaccine.getNextDueDate()));
                                 }
                                 runOnUiThread(() -> {
                                     Toast.makeText(PetDetailActivity.this, "Vaccine updated successfully", Toast.LENGTH_SHORT).show();
@@ -299,15 +312,7 @@ public class PetDetailActivity extends AppCompatActivity {
                                         vaccine.getName(),
                                         vaccine.getNextDueDate()
                                     );
-                                    Logger.info(TAG, String.format(Locale.getDefault(),
-                                        "Scheduled recurring vaccine notification for pet: %s, vaccine: %s, next due: %s",
-                                        pet.getName(), vaccine.getName(), vaccine.getNextDueDate()));
                                 }
-
-                                Logger.info(TAG, String.format(Locale.getDefault(),
-                                    "Created new vaccine: name=%s, recurring=%b, months=%d, petId=%d",
-                                    vaccine.getName(), vaccine.isRecurring(), 
-                                    vaccine.getRecurringPeriodMonths(), pet.getId()));
 
                                 runOnUiThread(() -> {
                                     Toast.makeText(PetDetailActivity.this, "Vaccine added successfully", Toast.LENGTH_SHORT).show();
@@ -315,10 +320,6 @@ public class PetDetailActivity extends AppCompatActivity {
                                 });
                             }
                         } catch (Exception e) {
-                            Logger.error(TAG, String.format(Locale.getDefault(),
-                                "Failed to %s vaccine for pet: %s", 
-                                existingVaccine != null ? "update" : "add", 
-                                pet.getName()), e);
                             String errorMessage = e.getMessage();
                             runOnUiThread(() -> Toast.makeText(PetDetailActivity.this,
                                 "Error " + (existingVaccine != null ? "updating" : "adding") + 
@@ -327,14 +328,13 @@ public class PetDetailActivity extends AppCompatActivity {
                         }
                     });
                 } catch (Exception e) {
-                    Logger.error(TAG, "Failed to process date format", e);
                     Toast.makeText(this, "Error processing date format", Toast.LENGTH_SHORT).show();
                 }
             })
             .setNegativeButton("Cancel", null);
-        
+
+        // Add delete button for existing vaccines
         if (existingVaccine != null) {
-            // Add delete button for existing vaccines
             builder.setNeutralButton("Delete", (dialog, which) -> showDeleteVaccineConfirmationDialog(existingVaccine));
         }
 
@@ -349,15 +349,12 @@ public class PetDetailActivity extends AppCompatActivity {
             recurringCheckbox.setChecked(existingVaccine.isRecurring());
             recurringContainer.setVisibility(existingVaccine.isRecurring() ? View.VISIBLE : View.GONE);
             if (existingVaccine.isRecurring()) {
-                int spinnerPosition = 0;
-                String[] months = getResources().getStringArray(R.array.months_array);
-                for (int i = 0; i < months.length; i++) {
-                    if (months[i].startsWith(String.valueOf(existingVaccine.getRecurringPeriodMonths()))) {
-                        spinnerPosition = i;
+                for (String month : monthsArray) {
+                    if (month.startsWith(String.valueOf(existingVaccine.getRecurringPeriodMonths()))) {
+                        monthsSpinner.setText(month, false);
                         break;
                     }
                 }
-                monthsSpinner.setSelection(spinnerPosition);
             }
             notesInput.setText(existingVaccine.getNotes());
         } else {
@@ -376,7 +373,9 @@ public class PetDetailActivity extends AppCompatActivity {
         }
 
         Calendar calendar = Calendar.getInstance();
-        if (existingVaccine != null) {
+        
+        // If editing an existing vaccine, set the calendar to its date
+        if (existingVaccine != null && existingVaccine.getDateAdministered() != null) {
             try {
                 Date date = dateFormat.parse(existingVaccine.getDateAdministered());
                 if (date != null) {
@@ -387,17 +386,36 @@ public class PetDetailActivity extends AppCompatActivity {
             }
         }
 
-        activeDatePickerDialog = new DatePickerDialog(
-            PetDetailActivity.this,
-            (view, year, month, dayOfMonth) -> {
-                String date = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, month + 1, year);
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+            this,
+            (view, selectedYear, selectedMonth, selectedDay) -> {
+                // Check if selected date is in the future
+                Calendar selectedDate = Calendar.getInstance();
+                selectedDate.set(selectedYear, selectedMonth, selectedDay);
+                
+                if (selectedDate.after(Calendar.getInstance())) {
+                    Toast.makeText(this, 
+                        "Administration date cannot be in the future", 
+                        Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                String date = String.format(Locale.getDefault(), "%02d/%02d/%d", 
+                    selectedDay, selectedMonth + 1, selectedYear);
                 dateInput.setText(date);
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            year, month, day
         );
-        activeDatePickerDialog.show();
+
+        // Set the maximum date to today
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        
+        activeDatePickerDialog = datePickerDialog;
+        datePickerDialog.show();
     }
 
     private void loadVaccines() {

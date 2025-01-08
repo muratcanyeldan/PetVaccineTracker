@@ -1,6 +1,7 @@
 package com.muratcan.apps.petvaccinetracker.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.divider.MaterialDivider;
 import com.muratcan.apps.petvaccinetracker.R;
 import com.muratcan.apps.petvaccinetracker.model.Vaccine;
 import java.util.ArrayList;
@@ -100,7 +103,8 @@ public class VaccineAdapter extends RecyclerView.Adapter<VaccineAdapter.VaccineV
         private final TextView vaccineDateText;
         private final TextView nextDueDateText;
         private final TextView vaccineNotesText;
-        private final TextView vaccineStatusText;
+        private final Chip vaccineStatusChip;
+        private final MaterialDivider notesDivider;
 
         VaccineViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -108,7 +112,8 @@ public class VaccineAdapter extends RecyclerView.Adapter<VaccineAdapter.VaccineV
             vaccineDateText = itemView.findViewById(R.id.vaccineDateText);
             nextDueDateText = itemView.findViewById(R.id.nextDueDateText);
             vaccineNotesText = itemView.findViewById(R.id.vaccineNotesText);
-            vaccineStatusText = itemView.findViewById(R.id.vaccineStatusText);
+            vaccineStatusChip = itemView.findViewById(R.id.vaccineStatusChip);
+            notesDivider = itemView.findViewById(R.id.notesDivider);
         }
 
         void bind(Vaccine vaccine, OnVaccineClickListener listener) {
@@ -120,13 +125,34 @@ public class VaccineAdapter extends RecyclerView.Adapter<VaccineAdapter.VaccineV
                 vaccineDateText.setText(context.getString(
                     R.string.vaccine_administered_date, vaccine.getDateAdministered()));
                 vaccineDateText.setVisibility(View.VISIBLE);
-                vaccineStatusText.setVisibility(View.GONE);
+                vaccineStatusChip.setVisibility(View.GONE);
                 
                 // Show next due date for recurring vaccines
                 if (vaccine.isRecurring() && vaccine.getNextDueDate() != null && !vaccine.getNextDueDate().isEmpty()) {
                     nextDueDateText.setText(context.getString(
                         R.string.vaccine_next_due_format, vaccine.getNextDueDate()));
-                    nextDueDateText.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    
+                    // Check if due date is within 7 days
+                    try {
+                        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
+                        java.util.Date dueDate = dateFormat.parse(vaccine.getNextDueDate());
+                        java.util.Calendar calendar = java.util.Calendar.getInstance();
+                        java.util.Date today = calendar.getTime();
+                        calendar.add(java.util.Calendar.DAY_OF_MONTH, 7);
+                        java.util.Date sevenDaysLater = calendar.getTime();
+                        
+                        if (dueDate != null && !dueDate.before(today) && !dueDate.after(sevenDaysLater)) {
+                            // Due within 7 days - show in warning color
+                            nextDueDateText.setTextColor(ContextCompat.getColor(context, R.color.error));
+                        } else {
+                            // Due later - show in normal color
+                            nextDueDateText.setTextColor(ContextCompat.getColor(context, R.color.textSecondary));
+                        }
+                    } catch (Exception e) {
+                        // In case of date parsing error, use normal color
+                        nextDueDateText.setTextColor(ContextCompat.getColor(context, R.color.textSecondary));
+                    }
+                    
                     nextDueDateText.setVisibility(View.VISIBLE);
                 } else {
                     nextDueDateText.setVisibility(View.GONE);
@@ -134,17 +160,20 @@ public class VaccineAdapter extends RecyclerView.Adapter<VaccineAdapter.VaccineV
             } else {
                 // Vaccine not administered yet
                 vaccineDateText.setVisibility(View.GONE);
-                vaccineStatusText.setVisibility(View.VISIBLE);
-                vaccineStatusText.setText(R.string.vaccine_not_administered);
-                vaccineStatusText.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
-                nextDueDateText.setVisibility(View.GONE); // Hide due date for non-administered vaccines
+                vaccineStatusChip.setVisibility(View.VISIBLE);
+                vaccineStatusChip.setText(R.string.vaccine_not_administered);
+                vaccineStatusChip.setChipBackgroundColor(
+                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.accent)));
+                nextDueDateText.setVisibility(View.GONE);
             }
 
             if (vaccine.getNotes() != null && !vaccine.getNotes().isEmpty()) {
+                notesDivider.setVisibility(View.VISIBLE);
                 vaccineNotesText.setText(context.getString(
                     R.string.vaccine_notes_format, vaccine.getNotes()));
                 vaccineNotesText.setVisibility(View.VISIBLE);
             } else {
+                notesDivider.setVisibility(View.GONE);
                 vaccineNotesText.setVisibility(View.GONE);
             }
 

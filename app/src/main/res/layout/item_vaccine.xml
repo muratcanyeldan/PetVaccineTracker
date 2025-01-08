@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    style="@style/Widget.App.CardView">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,47 +14,60 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
-            android:id="@+id/vaccineNameText"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
-        <TextView
-            android:id="@+id/vaccineStatusText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textStyle="italic"
-            android:textColor="@color/colorAccent"
-            android:visibility="gone"
-            android:layout_marginBottom="4dp"/>
+            <TextView
+                android:id="@+id/vaccineNameText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="@style/TextAppearance.App.Title"
+                android:textSize="18sp"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/vaccineStatusChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:chipBackgroundColor="@color/accent"
+                android:textColor="@color/white"
+                android:visibility="gone"/>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/vaccineDateText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
+            style="@style/TextAppearance.App.Subtitle"
             android:layout_marginBottom="4dp"/>
 
         <TextView
             android:id="@+id/nextDueDateText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/colorAccent"
+            style="@style/TextAppearance.App.Subtitle"
+            android:textColor="@color/warning"
             android:layout_marginBottom="4dp"
+            android:visibility="gone"/>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/notesDivider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
             android:visibility="gone"/>
 
         <TextView
             android:id="@+id/vaccineNotesText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
+            style="@style/TextAppearance.App.Subtitle"
             android:textStyle="italic"
             android:visibility="gone"/>
 
     </LinearLayout>
-</androidx.cardview.widget.CardView> 
+</com.google.android.material.card.MaterialCardView> 

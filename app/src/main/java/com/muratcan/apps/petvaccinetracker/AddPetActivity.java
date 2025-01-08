@@ -2,14 +2,14 @@ package com.muratcan.apps.petvaccinetracker;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.muratcan.apps.petvaccinetracker.database.AppDatabase;
 import com.muratcan.apps.petvaccinetracker.model.Pet;
@@ -17,7 +17,6 @@ import com.muratcan.apps.petvaccinetracker.model.Vaccine;
 import com.muratcan.apps.petvaccinetracker.util.FirebaseHelper;
 import com.muratcan.apps.petvaccinetracker.util.Logger;
 import com.muratcan.apps.petvaccinetracker.util.NotificationHelper;
-
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,10 +27,10 @@ import java.util.concurrent.Executors;
 public class AddPetActivity extends AppCompatActivity {
     private static final String TAG = "AddPetActivity";
     private TextInputEditText petNameEditText;
-    private Spinner petTypeSpinner;
+    private MaterialAutoCompleteTextView petTypeSpinner;
     private TextInputEditText petBreedEditText;
     private TextInputEditText petDobEditText;
-    private MaterialCheckBox addRecommendedVaccinesCheckbox;
+    private SwitchMaterial addRecommendedVaccinesCheckbox;
     private MaterialButton addPetButton;
     private AppDatabase database;
     private ExecutorService executorService;
@@ -48,10 +47,29 @@ public class AddPetActivity extends AppCompatActivity {
         firebaseHelper = new FirebaseHelper();
         dateFormat = android.text.format.DateFormat.getDateFormat(this);
 
+        // Setup toolbar with back button
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setDisplayShowTitleEnabled(false); // Hide default title
+            }
+        }
+
         initializeViews();
         setupSpinner();
         setupDatePicker();
         setupAddButton();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // Close the activity when back button is pressed
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initializeViews() {
@@ -64,13 +82,22 @@ public class AddPetActivity extends AppCompatActivity {
     }
 
     private void setupSpinner() {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+        String[] petTypes = getResources().getStringArray(R.array.pet_types);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
             this,
-            R.array.pet_types,
-            android.R.layout.simple_spinner_item
+            R.layout.item_dropdown_menu,
+            petTypes
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         petTypeSpinner.setAdapter(adapter);
+        
+        petTypeSpinner.setFocusable(false);
+        petTypeSpinner.setFocusableInTouchMode(false);
+        
+        if (petTypes.length > 0) {
+            petTypeSpinner.setText(petTypes[0], false);
+        }
+        
+        petTypeSpinner.setOnClickListener(v -> petTypeSpinner.showDropDown());
     }
 
     private void setupDatePicker() {
@@ -83,28 +110,36 @@ public class AddPetActivity extends AppCompatActivity {
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                 AddPetActivity.this,
                 (view, selectedYear, selectedMonth, selectedDay) -> {
-                    String date = String.format(Locale.getDefault(), "%02d/%02d/%d", selectedDay, selectedMonth + 1, selectedYear);
+                    // Check if selected date is in the future
+                    Calendar selectedDate = Calendar.getInstance();
+                    selectedDate.set(selectedYear, selectedMonth, selectedDay);
+                    
+                    if (selectedDate.after(Calendar.getInstance())) {
+                        Toast.makeText(AddPetActivity.this, 
+                            "Birth date cannot be in the future", 
+                            Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    
+                    String date = String.format(Locale.getDefault(), "%02d/%02d/%d", 
+                        selectedDay, selectedMonth + 1, selectedYear);
                     petDobEditText.setText(date);
                 },
                 year, month, day
             );
+
+            // Set the maximum date to today
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
             datePickerDialog.show();
         });
     }
 
     private void setupAddButton() {
         addPetButton.setOnClickListener(v -> {
-            CharSequence nameSeq = petNameEditText.getText();
-            String name = nameSeq != null ? nameSeq.toString().trim() : "";
-
-            Object typeObj = petTypeSpinner.getSelectedItem();
-            String type = typeObj != null ? typeObj.toString() : "";
-
-            CharSequence breedSeq = petBreedEditText.getText();
-            String breed = breedSeq != null ? breedSeq.toString().trim() : "";
-
-            CharSequence dobSeq = petDobEditText.getText();
-            String dob = dobSeq != null ? dobSeq.toString().trim() : "";
+            String name = petNameEditText.getText() != null ? petNameEditText.getText().toString().trim() : "";
+            String type = petTypeSpinner.getText() != null ? petTypeSpinner.getText().toString().trim() : "";
+            String breed = petBreedEditText.getText() != null ? petBreedEditText.getText().toString().trim() : "";
+            String dob = petDobEditText.getText() != null ? petDobEditText.getText().toString().trim() : "";
 
             if (name.isEmpty()) {
                 petNameEditText.setError("Please enter pet's name");
