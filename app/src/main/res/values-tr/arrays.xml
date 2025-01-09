@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pet_types">
+        <item>Köpek</item>
+        <item>Kedi</item>
+    </string-array>
+
+    <string-array name="recurring_options">
+        <item>Tek Seferlik</item>
+        <item>Tekrarlayan</item>
+    </string-array>
+
+    <string-array name="months_array">
+        <item>1 ay</item>
+        <item>2 ay</item>
+        <item>3 ay</item>
+        <item>6 ay</item>
+        <item>12 ay</item>
+    </string-array>
+</resources> 

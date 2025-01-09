@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Evcil Hayvan Aşı Takibi</string>
+    
+    <!-- Common -->
+    <string name="action_save">Kaydet</string>
+    <string name="action_cancel">İptal</string>
+    <string name="action_delete">Sil</string>
+    <string name="action_edit">Düzenle</string>
+    <string name="action_undo">Geri Al</string>
+    <string name="action_retry">Tekrar Dene</string>
+    <string name="action_share">Paylaş</string>
+    
+    <!-- Add/Edit Pet -->
+    <string name="add_pet">Evcil Hayvan Ekle</string>
+    <string name="edit_pet">Evcil Hayvanı Düzenle</string>
+    <string name="hint_pet_name">Evcil Hayvan Adı</string>
+    <string name="hint_pet_type">Evcil Hayvan Türü</string>
+    <string name="hint_pet_breed">Irk</string>
+    <string name="hint_birth_date">Doğum Tarihi</string>
+    <string name="select_birth_date">Doğum Tarihi Seç</string>
+    <string name="button_add">Evcil Hayvan Ekle</string>
+    <string name="button_adding">Ekleniyor…</string>
+    <string name="button_update">Evcil Hayvanı Güncelle</string>
+    <string name="button_updating">Güncelleniyor…</string>
+    <string name="pet_added_successfully">Evcil hayvan başarıyla eklendi</string>
+    <string name="pet_updated_successfully">Evcil hayvan başarıyla güncellendi</string>
+    <string name="pet_deleted">Evcil hayvan başarıyla silindi</string>
+    <string name="delete_pet_confirmation">Evcil Hayvanı Sil?</string>
+    <string name="delete_pet_message">Bu evcil hayvanı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
+    
+    <!-- Pet Details -->
+    <string name="pet_details">Evcil Hayvan Detayları</string>
+    <string name="vaccines">Aşılar</string>
+    <string name="no_vaccines">Aşı Yok</string>
+    <string name="add_first_vaccine">Takip etmeye başlamak için ilk aşı kaydını ekleyin</string>
+    <string name="delete_vaccine_confirmation">Bu aşıyı silmek istediğinizden emin misiniz?</string>
+    <string name="delete_vaccine_message">Bu işlem geri alınamaz.</string>
+    <string name="vaccine_deleted">Aşı silindi</string>
+    
+    <!-- Validation Errors -->
+    <string name="error_enter_pet_name">Lütfen evcil hayvan adı girin</string>
+    <string name="error_name_min_length">İsim en az 2 karakter olmalıdır</string>
+    <string name="error_select_pet_type">Lütfen evcil hayvan türünü seçin</string>
+    <string name="error_enter_pet_breed">Lütfen ırk girin</string>
+    <string name="error_select_birth_date">Lütfen doğum tarihi seçin</string>
+    <string name="error_future_date">Tarih gelecekte olamaz</string>
+    
+    <!-- Image Handling -->
+    <string name="select_image">Resim Seç</string>
+    <string name="crop_image">Resmi Kırp</string>
+    <string name="error_loading_image">Resim yüklenirken hata oluştu</string>
+    <string name="error_saving_image">Resim kaydedilirken hata oluştu</string>
+    
+    <!-- Error Messages -->
+    <string name="error_loading_pets">Evcil hayvanlar yüklenirken hata oluştu</string>
+    <string name="error_loading_vaccines">Aşılar yüklenirken hata oluştu</string>
+    <string name="error_adding_pet">Evcil hayvan eklenirken hata oluştu</string>
+    <string name="error_updating_pet">Evcil hayvan güncellenirken hata oluştu</string>
+    <string name="error_deleting_pet">Evcil hayvan silinirken hata oluştu</string>
+    <string name="error_adding_vaccine">Aşı eklenirken hata oluştu</string>
+    <string name="error_updating_vaccine">Aşı güncellenirken hata oluştu</string>
+    <string name="error_deleting_vaccine">Aşı silinirken hata oluştu</string>
+    <string name="error_unknown">Bilinmeyen bir hata oluştu</string>
+    
+    <!-- Empty States -->
+    <string name="no_pets">Evcil Hayvan Yok</string>
+    <string name="add_first_pet">Aşıları takip etmeye başlamak için ilk evcil hayvanınızı ekleyin</string>
+    
+    <!-- Vaccine related strings -->
+    <string name="vaccine_administered_date">%s tarihinde uygulandı</string>
+    <string name="vaccine_next_due_format">Sonraki: %s</string>
+    <string name="vaccine_not_administered">Henüz Uygulanmadı</string>
+    <string name="vaccine_notes_format">Notlar: %s</string>
+    <string name="vaccine_status_administered">Uygulandı</string>
+    <string name="vaccine_overdue">%d gün gecikmiş</string>
+    <string name="vaccine_due_today">Bugün yapılmalı</string>
+    <string name="vaccine_due_in_days">%d gün içinde yapılmalı</string>
+    <string name="vaccine_due_date">%s tarihinde yapılmalı</string>
+    <string name="error_processing_date">Tarih işlenirken hata oluştu</string>
+    
+    <!-- Notification related strings -->
+    <string name="channel_name">Aşı Hatırlatıcıları</string>
+    <string name="channel_description">Yaklaşan evcil hayvan aşı tarihleri için bildirimler</string>
+    <string name="vaccine_due_notification_title">Aşı Zamanı</string>
+    <string name="vaccine_due_notification_text">%1$s\'in %2$s aşısı zamanı geldi</string>
+    <string name="logout">Çıkış Yap</string>
+    
+    <!-- Dialog Messages -->
+    <string name="discard_changes_title">Değişiklikler İptal Edilsin mi?</string>
+    <string name="discard_changes_message">Kaydedilmemiş değişiklikleriniz var. Çıkmak istediğinizden emin misiniz?</string>
+    <string name="discard">İptal Et</string>
+    <string name="cancel">Vazgeç</string>
+
+    <!-- Vaccine Details -->
+    <string name="vaccine_administered_text">Uygulama: %1$s</string>
+    <string name="vaccine_not_administered_text">Henüz uygulanmadı</string>
+    <string name="vaccine_next_due_text">Sonraki: %1$s</string>
+
+    <!-- Add/Edit Vaccine -->
+    <string name="add_vaccine">Aşı Ekle</string>
+    <string name="edit_vaccine">Aşı Düzenle</string>
+    <string name="vaccine_name">Aşı Adı</string>
+    <string name="vaccine_name_required">Aşı adı gerekli</string>
+    <string name="date_administered">Uygulama Tarihi</string>
+    <string name="vaccine_type">Aşı Tipi</string>
+    <string name="recurring_period">Tekrar Süresi</string>
+    <string name="recurring_period_required">Lütfen tekrar süresini seçin</string>
+    <string name="date_future_error">Tarih gelecekte olamaz</string>
+    <string name="error_invalid_date">Hata: Geçersiz tarih formatı</string>
+    <string name="error_saving_vaccine">Aşı kaydedilirken hata oluştu</string>
+    <string name="vaccine_added">Aşı başarıyla eklendi</string>
+    <string name="vaccine_updated">Aşı başarıyla güncellendi</string>
+    <string name="save_vaccine">Aşıyı Kaydet</string>
+    <string name="error_pet_not_found">Hata: Evcil hayvan bulunamadı</string>
+    <string name="one_time_only">Tek Seferlik</string>
+    <string name="recurring">Tekrarlanan</string>
+    <string name="months_format">%d ay</string>
+    <string name="notes">Notlar</string>
+</resources> 

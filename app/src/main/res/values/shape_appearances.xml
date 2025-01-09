@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Small components like buttons, text fields -->
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_corner_radius</item>
+    </style>
+
+    <!-- Medium components like cards, dialogs -->
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_corner_radius</item>
+    </style>
+
+    <!-- Large components like bottom sheets, navigation drawers -->
+    <style name="ShapeAppearance.App.LargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_corner_radius</item>
+    </style>
+
+    <!-- Circular components like FABs, profile images -->
+    <style name="ShapeAppearance.App.CircularComponent" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Card specific shape appearances -->
+    <style name="ShapeAppearance.App.Card" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_corner_radius</item>
+    </style>
+
+    <!-- Dialog specific shape appearances -->
+    <style name="ShapeAppearance.App.Dialog" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/dialog_corner_radius</item>
+    </style>
+
+    <!-- Bottom sheet specific shape appearances -->
+    <style name="ShapeAppearance.App.BottomSheet" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">@dimen/card_corner_radius</item>
+        <item name="cornerSizeTopRight">@dimen/card_corner_radius</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+</resources> 
