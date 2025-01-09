@@ -1,6 +1,7 @@
 package com.muratcan.apps.petvaccinetracker.util;
 
 import android.util.Log;
+
 import java.util.Locale;
 
 public class Logger {

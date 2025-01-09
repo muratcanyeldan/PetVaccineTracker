@@ -5,47 +5,73 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.view.Window;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback;
 import com.muratcan.apps.petvaccinetracker.adapter.PetAdapter;
-import com.muratcan.apps.petvaccinetracker.database.AppDatabase;
 import com.muratcan.apps.petvaccinetracker.model.Pet;
 import com.muratcan.apps.petvaccinetracker.util.FirebaseHelper;
+import com.muratcan.apps.petvaccinetracker.viewmodel.PetViewModel;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
+    private RecyclerView petRecyclerView;
     private PetAdapter petAdapter;
-    private FloatingActionButton addPetFab;
-    private AppDatabase database;
-    private ExecutorService executorService;
-    private List<Pet> petList;
+    private View emptyView;
+    private ExtendedFloatingActionButton addPetFab;
+    private PetViewModel viewModel;
     private FirebaseHelper firebaseHelper;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+        setExitSharedElementCallback(new MaterialContainerTransformSharedElementCallback());
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        database = AppDatabase.getInstance(this);
-        executorService = Executors.newSingleThreadExecutor();
-        petList = new ArrayList<>();
+        // Initialize Firebase Helper
         firebaseHelper = new FirebaseHelper();
 
+        // Set up toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("My Pets");
+        }
+
+        // Initialize ViewModel
+        viewModel = new ViewModelProvider(this).get(PetViewModel.class);
+
+        // Initialize views
         initializeViews();
+
+        // Set up RecyclerView
         setupRecyclerView();
-        setupAddPetButton();
+
+        // Observe ViewModel
+        observeViewModel();
+
+        // Load pets
+        viewModel.loadPets();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -59,77 +85,87 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void logout() {
-        FirebaseHelper firebaseHelper = new FirebaseHelper();
         firebaseHelper.signOut();
         Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
 
     private void initializeViews() {
-        recyclerView = findViewById(R.id.petsRecyclerView);
+        petRecyclerView = findViewById(R.id.petRecyclerView);
         addPetFab = findViewById(R.id.addPetFab);
+        emptyView = findViewById(R.id.emptyView);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+
+        addPetFab.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddPetActivity.class);
+            startActivity(intent);
+        });
+
+        // Set up SwipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener(() -> viewModel.loadPets());
     }
 
     private void setupRecyclerView() {
-        petAdapter = new PetAdapter(petList, pet -> {
+        petRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        petAdapter = new PetAdapter(new ArrayList<>(), pet -> {
             Intent intent = new Intent(MainActivity.this, PetDetailActivity.class);
             intent.putExtra("pet", pet);
-            startActivity(intent);
+            String transitionName = "pet_card_" + pet.getId();
+            View sharedView = petRecyclerView.findViewWithTag(transitionName);
+            if (sharedView != null) {
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    MainActivity.this,
+                    sharedView,
+                    transitionName
+                );
+                startActivity(intent, options.toBundle());
+            } else {
+                startActivity(intent);
+            }
         });
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(petAdapter);
+        petRecyclerView.setAdapter(petAdapter);
     }
 
-    private void setupAddPetButton() {
-        addPetFab.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, AddPetActivity.class);
-            startActivity(intent);
-        });
+    private void observeViewModel() {
+        viewModel.getPets().observe(this, this::updatePetList);
+        viewModel.getIsLoading().observe(this, this::updateLoadingState);
+        viewModel.getError().observe(this, this::showError);
+    }
+
+    private void updatePetList(List<Pet> pets) {
+        if (pets == null || pets.isEmpty()) {
+            emptyView.setVisibility(View.VISIBLE);
+            petRecyclerView.setVisibility(View.GONE);
+        } else {
+            emptyView.setVisibility(View.GONE);
+            petRecyclerView.setVisibility(View.VISIBLE);
+            petAdapter.updatePets(pets);
+        }
+    }
+
+    private void updateLoadingState(boolean isLoading) {
+        swipeRefreshLayout.setRefreshing(isLoading);
+        if (isLoading) {
+            addPetFab.hide();
+        } else {
+            addPetFab.show();
+        }
+    }
+
+    private void showError(String error) {
+        if (error != null) {
+            Snackbar.make(petRecyclerView, error, Snackbar.LENGTH_LONG)
+                .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+                .setAction("Retry", v -> viewModel.loadPets())
+                .show();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadPets();
-    }
-
-    private void loadPets() {
-        String userId = firebaseHelper.getCurrentUserId();
-        if (userId == null) {
-            Toast.makeText(this, "Error: User not logged in", Toast.LENGTH_SHORT).show();
-            logout();
-            return;
-        }
-
-        executorService.execute(() -> {
-            try {
-                List<Pet> pets = database.petDao().getAllPets(userId);
-                runOnUiThread(() -> {
-                    petAdapter.updatePets(pets);
-
-                    if (pets.isEmpty()) {
-                        findViewById(R.id.emptyView).setVisibility(View.VISIBLE);
-                        recyclerView.setVisibility(View.GONE);
-                    } else {
-                        findViewById(R.id.emptyView).setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.VISIBLE);
-                    }
-                });
-            } catch (Exception e) {
-                runOnUiThread(() -> 
-                    Toast.makeText(MainActivity.this, 
-                        getString(R.string.error_loading_pets, e.getMessage()), 
-                        Toast.LENGTH_SHORT).show()
-                );
-            }
-        });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        executorService.shutdown();
+        viewModel.loadPets();
     }
 } 

@@ -3,12 +3,17 @@ package com.muratcan.apps.petvaccinetracker.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.muratcan.apps.petvaccinetracker.R;
 import com.muratcan.apps.petvaccinetracker.model.Pet;
+import com.muratcan.apps.petvaccinetracker.util.ImageUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +40,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull PetViewHolder holder, int position) {
-        Pet pet = pets.get(position);
-        holder.bind(pet);
+        holder.bind(pets.get(position), listener);
     }
 
     @Override
@@ -82,32 +86,44 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
             return oldPet.getName().equals(newPet.getName()) &&
                    oldPet.getType().equals(newPet.getType()) &&
                    oldPet.getBreed().equals(newPet.getBreed()) &&
-                   oldPet.getDateOfBirth().equals(newPet.getDateOfBirth());
+                   (oldPet.getImageUri() == null ? 
+                        newPet.getImageUri() == null : 
+                        oldPet.getImageUri().equals(newPet.getImageUri()));
         }
     }
 
-    public class PetViewHolder extends RecyclerView.ViewHolder {
-        private final TextView nameTextView;
-        private final TextView typeTextView;
-        private final TextView breedTextView;
+    public static class PetViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView petImageView;
+        private final TextView petNameTextView;
+        private final TextView petTypeTextView;
+        private final TextView petBreedTextView;
+        private final View cardView;
 
-        PetViewHolder(@NonNull View itemView) {
+        public PetViewHolder(@NonNull View itemView) {
             super(itemView);
-            nameTextView = itemView.findViewById(R.id.petNameTextView);
-            typeTextView = itemView.findViewById(R.id.petTypeTextView);
-            breedTextView = itemView.findViewById(R.id.petBreedTextView);
+            cardView = itemView.findViewById(R.id.cardView);
+            petImageView = itemView.findViewById(R.id.petImageView);
+            petNameTextView = itemView.findViewById(R.id.petNameTextView);
+            petTypeTextView = itemView.findViewById(R.id.petTypeTextView);
+            petBreedTextView = itemView.findViewById(R.id.petBreedTextView);
         }
 
-        void bind(Pet pet) {
-            nameTextView.setText(pet.getName());
-            typeTextView.setText(pet.getType());
-            breedTextView.setText(pet.getBreed());
+        void bind(Pet pet, OnPetClickListener listener) {
+            String transitionName = "pet_card_" + pet.getId();
+            cardView.setTransitionName(transitionName);
+            cardView.setTag(transitionName);
 
-            itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onPetClick(pet);
-                }
-            });
+            petNameTextView.setText(pet.getName());
+            petTypeTextView.setText(pet.getType());
+            petBreedTextView.setText(pet.getBreed());
+
+            if (pet.getImageUri() != null) {
+                ImageUtils.loadImage(itemView.getContext(), pet.getImageUri(), petImageView);
+            } else {
+                petImageView.setImageResource(R.drawable.ic_pet_placeholder);
+            }
+
+            itemView.setOnClickListener(v -> listener.onPetClick(pet));
         }
     }
 } 

@@ -20,6 +20,7 @@ public class FirebaseHelper {
         return auth.createUserWithEmailAndPassword(email, password);
     }
 
+    @SuppressWarnings("unused")
     public void signOut() {
         auth.signOut();
     }
@@ -32,6 +33,7 @@ public class FirebaseHelper {
         return auth.getCurrentUser() != null;
     }
 
+    @SuppressWarnings("unused")
     public String getCurrentUserId() {
         FirebaseUser user = getCurrentUser();
         return user != null ? user.getUid() : null;

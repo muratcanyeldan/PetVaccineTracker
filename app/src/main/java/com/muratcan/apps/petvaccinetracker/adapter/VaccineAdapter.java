@@ -1,46 +1,51 @@
 package com.muratcan.apps.petvaccinetracker.adapter;
 
-import android.content.Context;
-import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.divider.MaterialDivider;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.muratcan.apps.petvaccinetracker.R;
 import com.muratcan.apps.petvaccinetracker.model.Vaccine;
+
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class VaccineAdapter extends RecyclerView.Adapter<VaccineAdapter.VaccineViewHolder> {
-    private final List<Vaccine> vaccines;
+    private List<Vaccine> vaccines;
     private final OnVaccineClickListener listener;
+    private final DateFormat dateFormat;
 
     public interface OnVaccineClickListener {
         void onVaccineClick(Vaccine vaccine);
+        void onVaccineDelete(Vaccine vaccine);
     }
 
     public VaccineAdapter(List<Vaccine> vaccines, OnVaccineClickListener listener) {
         this.vaccines = new ArrayList<>(vaccines);
         this.listener = listener;
+        this.dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
     }
 
     @NonNull
     @Override
     public VaccineViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_vaccine, parent, false);
+            .inflate(R.layout.item_vaccine, parent, false);
         return new VaccineViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull VaccineViewHolder holder, int position) {
-        holder.bind(vaccines.get(position), listener);
+        Vaccine vaccine = vaccines.get(position);
+        holder.bind(vaccine);
     }
 
     @Override
@@ -50,8 +55,7 @@ public class VaccineAdapter extends RecyclerView.Adapter<VaccineAdapter.VaccineV
 
     public void updateVaccines(List<Vaccine> newVaccines) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new VaccineDiffCallback(vaccines, newVaccines));
-        vaccines.clear();
-        vaccines.addAll(newVaccines);
+        vaccines = new ArrayList<>(newVaccines);
         diffResult.dispatchUpdatesTo(this);
     }
 
@@ -83,6 +87,7 @@ public class VaccineAdapter extends RecyclerView.Adapter<VaccineAdapter.VaccineV
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
             Vaccine oldVaccine = oldVaccines.get(oldItemPosition);
             Vaccine newVaccine = newVaccines.get(newItemPosition);
+            
             return oldVaccine.getName().equals(newVaccine.getName()) &&
                    (oldVaccine.getDateAdministered() == null ? 
                         newVaccine.getDateAdministered() == null : 
@@ -90,94 +95,68 @@ public class VaccineAdapter extends RecyclerView.Adapter<VaccineAdapter.VaccineV
                    (oldVaccine.getNextDueDate() == null ? 
                         newVaccine.getNextDueDate() == null : 
                         oldVaccine.getNextDueDate().equals(newVaccine.getNextDueDate())) &&
-                   oldVaccine.isRecurring() == newVaccine.isRecurring() &&
-                   oldVaccine.getRecurringPeriodMonths() == newVaccine.getRecurringPeriodMonths() &&
                    (oldVaccine.getNotes() == null ? 
                         newVaccine.getNotes() == null : 
                         oldVaccine.getNotes().equals(newVaccine.getNotes()));
         }
     }
 
-    public static class VaccineViewHolder extends RecyclerView.ViewHolder {
-        private final TextView vaccineNameText;
-        private final TextView vaccineDateText;
-        private final TextView nextDueDateText;
-        private final TextView vaccineNotesText;
-        private final Chip vaccineStatusChip;
-        private final MaterialDivider notesDivider;
+    public class VaccineViewHolder extends RecyclerView.ViewHolder {
+        private final TextView nameTextView;
+        private final TextView dateAdministeredTextView;
+        private final TextView nextDueDateTextView;
+        private final TextView notesTextView;
+        private final ImageButton deleteButton;
 
-        VaccineViewHolder(@NonNull View itemView) {
+        VaccineViewHolder(View itemView) {
             super(itemView);
-            vaccineNameText = itemView.findViewById(R.id.vaccineNameText);
-            vaccineDateText = itemView.findViewById(R.id.vaccineDateText);
-            nextDueDateText = itemView.findViewById(R.id.nextDueDateText);
-            vaccineNotesText = itemView.findViewById(R.id.vaccineNotesText);
-            vaccineStatusChip = itemView.findViewById(R.id.vaccineStatusChip);
-            notesDivider = itemView.findViewById(R.id.notesDivider);
+            nameTextView = itemView.findViewById(R.id.vaccineNameTextView);
+            dateAdministeredTextView = itemView.findViewById(R.id.dateAdministeredTextView);
+            nextDueDateTextView = itemView.findViewById(R.id.nextDueDateTextView);
+            notesTextView = itemView.findViewById(R.id.notesTextView);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
 
-        void bind(Vaccine vaccine, OnVaccineClickListener listener) {
-            Context context = itemView.getContext();
-            vaccineNameText.setText(vaccine.getName());
+        void bind(final Vaccine vaccine) {
+            nameTextView.setText(vaccine.getName());
             
-            if (vaccine.getDateAdministered() != null) {
-                // Vaccine has been administered
-                vaccineDateText.setText(context.getString(
-                    R.string.vaccine_administered_date, vaccine.getDateAdministered()));
-                vaccineDateText.setVisibility(View.VISIBLE);
-                vaccineStatusChip.setVisibility(View.GONE);
-                
-                // Show next due date for recurring vaccines
-                if (vaccine.isRecurring() && vaccine.getNextDueDate() != null && !vaccine.getNextDueDate().isEmpty()) {
-                    nextDueDateText.setText(context.getString(
-                        R.string.vaccine_next_due_format, vaccine.getNextDueDate()));
-                    
-                    // Check if due date is within 7 days
-                    try {
-                        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
-                        java.util.Date dueDate = dateFormat.parse(vaccine.getNextDueDate());
-                        java.util.Calendar calendar = java.util.Calendar.getInstance();
-                        java.util.Date today = calendar.getTime();
-                        calendar.add(java.util.Calendar.DAY_OF_MONTH, 7);
-                        java.util.Date sevenDaysLater = calendar.getTime();
-                        
-                        if (dueDate != null && !dueDate.before(today) && !dueDate.after(sevenDaysLater)) {
-                            // Due within 7 days - show in warning color
-                            nextDueDateText.setTextColor(ContextCompat.getColor(context, R.color.error));
-                        } else {
-                            // Due later - show in normal color
-                            nextDueDateText.setTextColor(ContextCompat.getColor(context, R.color.textSecondary));
-                        }
-                    } catch (Exception e) {
-                        // In case of date parsing error, use normal color
-                        nextDueDateText.setTextColor(ContextCompat.getColor(context, R.color.textSecondary));
-                    }
-                    
-                    nextDueDateText.setVisibility(View.VISIBLE);
-                } else {
-                    nextDueDateText.setVisibility(View.GONE);
-                }
+            if (vaccine.getDateAdministered() != null && vaccine.getDateAdministered().getTime() > 0) {
+                dateAdministeredTextView.setText(itemView.getContext().getString(
+                    R.string.vaccine_administered_text,
+                    dateFormat.format(vaccine.getDateAdministered())
+                ));
+                dateAdministeredTextView.setVisibility(View.VISIBLE);
             } else {
-                // Vaccine not administered yet
-                vaccineDateText.setVisibility(View.GONE);
-                vaccineStatusChip.setVisibility(View.VISIBLE);
-                vaccineStatusChip.setText(R.string.vaccine_not_administered);
-                vaccineStatusChip.setChipBackgroundColor(
-                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.accent)));
-                nextDueDateText.setVisibility(View.GONE);
+                dateAdministeredTextView.setText(R.string.vaccine_not_administered_text);
+                dateAdministeredTextView.setVisibility(View.VISIBLE);
             }
-
-            if (vaccine.getNotes() != null && !vaccine.getNotes().isEmpty()) {
-                notesDivider.setVisibility(View.VISIBLE);
-                vaccineNotesText.setText(context.getString(
-                    R.string.vaccine_notes_format, vaccine.getNotes()));
-                vaccineNotesText.setVisibility(View.VISIBLE);
+            
+            if (vaccine.getNextDueDate() != null && vaccine.getNextDueDate().getTime() > 0) {
+                nextDueDateTextView.setText(itemView.getContext().getString(
+                    R.string.vaccine_next_due_text,
+                    dateFormat.format(vaccine.getNextDueDate())
+                ));
+                nextDueDateTextView.setVisibility(View.VISIBLE);
             } else {
-                notesDivider.setVisibility(View.GONE);
-                vaccineNotesText.setVisibility(View.GONE);
+                nextDueDateTextView.setVisibility(View.GONE);
+            }
+            
+            if (vaccine.getNotes() != null && !vaccine.getNotes().isEmpty()) {
+                notesTextView.setText(vaccine.getNotes());
+                notesTextView.setVisibility(View.VISIBLE);
+            } else {
+                notesTextView.setVisibility(View.GONE);
             }
 
             itemView.setOnClickListener(v -> listener.onVaccineClick(vaccine));
+            
+            deleteButton.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
+                .setTitle(R.string.delete_vaccine_confirmation)
+                .setMessage(R.string.delete_vaccine_message)
+                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                    listener.onVaccineDelete(vaccine))
+                .setNegativeButton(android.R.string.cancel, null)
+                .show());
         }
     }
 } 

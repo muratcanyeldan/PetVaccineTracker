@@ -1,12 +1,15 @@
 package com.muratcan.apps.petvaccinetracker.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
+
 import com.muratcan.apps.petvaccinetracker.model.Pet;
+
 import java.util.List;
 
 @Dao
@@ -20,11 +23,11 @@ public interface PetDao {
     @Delete
     void delete(Pet pet);
     
-    @Query("SELECT * FROM pets WHERE userId = :userId")
-    List<Pet> getAllPets(String userId);
+    @Query("SELECT * FROM pets")
+    LiveData<List<Pet>> getAllPets();
     
-    @Query("SELECT * FROM pets WHERE id = :petId AND userId = :userId")
-    Pet getPetById(long petId, String userId);
+    @Query("SELECT * FROM pets WHERE id = :petId")
+    Pet getPetById(long petId);
 
     @Transaction
     @Query("DELETE FROM vaccines WHERE petId = :petId")
@@ -35,4 +38,7 @@ public interface PetDao {
         deleteAllVaccinesForPet(pet.getId());
         delete(pet);
     }
+
+    @Query("SELECT * FROM pets ORDER BY id DESC LIMIT 1")
+    Pet getLastAddedPet();
 } 

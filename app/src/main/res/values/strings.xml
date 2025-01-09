@@ -1,45 +1,119 @@
 <resources>
     <string name="app_name">Pet Vaccine Tracker</string>
     
-    <!-- Vaccine item strings -->
-    <string name="vaccine_date_format">Date: %s</string>
-    <string name="vaccine_next_due_format">Next due: %s</string>
-    <string name="vaccine_notes_format">Notes: %s</string>
+    <!-- Common -->
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_share">Share</string>
     
-    <!-- Empty state messages -->
-    <string name="no_vaccines_added">No vaccines added yet</string>
-    <string name="no_pets_added">No pets added yet\nTap + to add a pet</string>
-    
-    <!-- Dialog titles -->
-    <string name="add_vaccine">Add Vaccine</string>
-    <string name="edit_vaccine">Edit Vaccine</string>
+    <!-- Add/Edit Pet -->
     <string name="add_pet">Add Pet</string>
     <string name="edit_pet">Edit Pet</string>
+    <string name="hint_pet_name">Pet Name</string>
+    <string name="hint_pet_type">Pet Type</string>
+    <string name="hint_pet_breed">Breed</string>
+    <string name="hint_birth_date">Birth Date</string>
+    <string name="select_birth_date">Select Birth Date</string>
+    <string name="button_add">Add Pet</string>
+    <string name="button_adding">Adding…</string>
+    <string name="button_update">Update Pet</string>
+    <string name="button_updating">Updating…</string>
+    <string name="pet_added_successfully">Pet added successfully</string>
+    <string name="pet_updated_successfully">Pet updated successfully</string>
+    <string name="pet_deleted">Pet deleted</string>
+    <string name="delete_pet_confirmation">Are you sure you want to delete this pet?</string>
+    <string name="delete_pet_message">This action cannot be undone.</string>
     
-    <!-- Button labels -->
-    <string name="action_add">Add</string>
-    <string name="action_update">Update</string>
-    <string name="action_cancel">Cancel</string>
+    <!-- Pet Details -->
+    <string name="pet_details">Pet Details</string>
+    <string name="vaccines">Vaccines</string>
+    <string name="no_vaccines">No Vaccines</string>
+    <string name="add_first_vaccine">Add your first vaccine to start tracking</string>
+    <string name="delete_vaccine_confirmation">Are you sure you want to delete this vaccine?</string>
+    <string name="delete_vaccine_message">This action cannot be undone.</string>
+    <string name="vaccine_deleted">Vaccine deleted</string>
     
-    <!-- Error messages -->
-    <string name="error_required_fields">Please fill in all required fields</string>
+    <!-- Validation Errors -->
+    <string name="error_enter_pet_name">Please enter a pet name</string>
+    <string name="error_name_min_length">Name must be at least 2 characters</string>
+    <string name="error_select_pet_type">Please select a pet type</string>
+    <string name="error_enter_pet_breed">Please enter a breed</string>
+    <string name="error_select_birth_date">Please select a birth date</string>
+    <string name="error_future_date">Date cannot be in the future</string>
+    
+    <!-- Image Handling -->
+    <string name="select_image">Select Image</string>
+    <string name="crop_image">Crop Image</string>
+    <string name="error_loading_image">Error loading image</string>
+    <string name="error_saving_image">Error saving image</string>
+    
+    <!-- Error Messages -->
+    <string name="error_loading_pets">Error loading pets</string>
+    <string name="error_loading_vaccines">Error loading vaccines</string>
+    <string name="error_adding_pet">Error adding pet</string>
+    <string name="error_updating_pet">Error updating pet</string>
+    <string name="error_deleting_pet">Error deleting pet</string>
+    <string name="error_adding_vaccine">Error adding vaccine</string>
+    <string name="error_updating_vaccine">Error updating vaccine</string>
+    <string name="error_deleting_vaccine">Error deleting vaccine</string>
+    <string name="error_unknown">Unknown error occurred</string>
+    
+    <!-- Empty States -->
+    <string name="no_pets">No Pets</string>
+    <string name="add_first_pet">Add your first pet to start tracking vaccines</string>
+    
+    <!-- Vaccine related strings -->
+    <string name="vaccine_administered_date">Administered on %s</string>
+    <string name="vaccine_next_due_format">Next due: %s</string>
+    <string name="vaccine_not_administered">Not Administered</string>
+    <string name="vaccine_notes_format">Notes: %s</string>
+    <string name="vaccine_status_administered">Administered</string>
+    <string name="vaccine_overdue">Overdue by %d days</string>
+    <string name="vaccine_due_today">Due today</string>
+    <string name="vaccine_due_in_days">Due in %d days</string>
+    <string name="vaccine_due_date">Due on %s</string>
     <string name="error_processing_date">Error processing date</string>
-    <string name="error_loading_vaccines">Error loading vaccines: %s</string>
-    <string name="error_pet_not_found">Error: Pet details not found</string>
-    <string name="error_loading_pets">Error loading pets: %s</string>
     
-    <!-- Success messages -->
-    <string name="success_vaccine_added">Vaccine added successfully</string>
-    <string name="success_vaccine_updated">Vaccine updated successfully</string>
+    <!-- Notification related strings -->
+    <string name="channel_name">Vaccine Reminders</string>
+    <string name="channel_description">Notifications for upcoming pet vaccine due dates</string>
+    <string name="vaccine_due_notification_title">Vaccine Due</string>
+    <string name="vaccine_due_notification_text">%1$s\'s %2$s vaccine is due</string>
+    <string name="logout">Logout</string>
     
-    <!-- Headers -->
-    <string name="header_my_pets">My Pets</string>
-    <string name="header_pet_details">Pet Details</string>
-    <string name="header_vaccines">Vaccines</string>
+    <!-- Dialog Messages -->
+    <string name="discard_changes_title">Discard Changes?</string>
+    <string name="discard_changes_message">You have unsaved changes. Are you sure you want to discard them?</string>
+    <string name="discard">Discard</string>
+    <string name="cancel">Cancel</string>
     
-    <!-- Vaccine strings -->
-    <string name="vaccine_administered_date">Administered: %s</string>
-    <string name="vaccine_not_administered">Not administered yet</string>
-    <string name="vaccine_recommended_date">Recommended date: %s</string>
-    <string name="vaccine_due_date">Due: %s</string>
+    <!-- Vaccine Details -->
+    <string name="vaccine_administered_text">Administered: %1$s</string>
+    <string name="vaccine_not_administered_text">Not yet administered</string>
+    <string name="vaccine_next_due_text">Next Due: %1$s</string>
+    
+    <!-- Add/Edit Vaccine -->
+    <string name="add_vaccine">Add Vaccine</string>
+    <string name="edit_vaccine">Edit Vaccine</string>
+    <string name="vaccine_name">Vaccine Name</string>
+    <string name="vaccine_name_required">Vaccine name is required</string>
+    <string name="date_administered">Date Administered</string>
+    <string name="vaccine_type">Vaccine Type</string>
+    <string name="recurring_period">Recurring Period</string>
+    <string name="recurring_period_required">Please select recurring period</string>
+    <string name="date_future_error">Date cannot be in the future</string>
+    <string name="error_invalid_date">Error: Invalid date format</string>
+    <string name="error_saving_vaccine">Error saving vaccine</string>
+    <string name="vaccine_added">Vaccine added successfully</string>
+    <string name="vaccine_updated">Vaccine updated successfully</string>
+    <string name="save_vaccine">Save Vaccine</string>
+    <string name="error_pet_not_found">Error: Pet not found</string>
+    <string name="one_time_only">One Time Only</string>
+    <string name="recurring">Recurring</string>
+    <string name="months_format">%d months</string>
+    <string name="notes">Notes</string>
 </resources>

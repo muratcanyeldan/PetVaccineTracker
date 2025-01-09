@@ -38,6 +38,14 @@ dependencies {
     implementation(libs.material)
     implementation(libs.constraintlayout)
     implementation(libs.cardview)
+    implementation(libs.swiperefreshlayout)
+    
+    // Image loading and caching
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
+    
+    // Image Cropping
+    implementation(libs.ucrop)
     
     // Firebase Authentication
     implementation(platform(libs.firebase.bom))
@@ -57,4 +65,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // PhotoView for zoomable images
+    implementation(libs.photoview)
 }

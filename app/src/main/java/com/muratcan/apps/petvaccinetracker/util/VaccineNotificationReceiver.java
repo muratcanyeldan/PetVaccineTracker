@@ -5,8 +5,11 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
 import androidx.core.app.NotificationCompat;
+
 import com.muratcan.apps.petvaccinetracker.R;
+
 import java.util.Locale;
 
 public class VaccineNotificationReceiver extends BroadcastReceiver {

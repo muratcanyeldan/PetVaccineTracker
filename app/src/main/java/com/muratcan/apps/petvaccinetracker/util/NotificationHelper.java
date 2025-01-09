@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.provider.Settings;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+@SuppressWarnings("unused")
 public class NotificationHelper {
     private static final String TAG = "NotificationHelper";
 
