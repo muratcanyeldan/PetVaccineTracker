@@ -2,27 +2,33 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
-    android:layout_marginVertical="4dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    android:layout_marginVertical="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="?attr/colorOutline">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="16dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/petImageView"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_margin="16dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Large"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
             android:id="@+id/petNameTextView"
@@ -30,31 +36,33 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/petImageView"
-            app:layout_constraintTop_toTopOf="@id/petImageView" />
+            app:layout_constraintTop_toTopOf="@id/petImageView"
+            tools:text="Max" />
 
-        <TextView
-            android:id="@+id/petTypeTextView"
-            android:layout_width="0dp"
+        <com.google.android.material.chip.Chip
+            android:id="@+id/petTypeChip"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="?attr/textAppearanceBody1"
-            app:layout_constraintEnd_toEndOf="@id/petNameTextView"
+            android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="@id/petNameTextView"
-            app:layout_constraintTop_toBottomOf="@id/petNameTextView" />
+            app:layout_constraintTop_toBottomOf="@id/petNameTextView"
+            style="@style/Widget.Material3.Chip.Assist"
+            tools:text="Dog" />
 
         <TextView
             android:id="@+id/petBreedTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="?attr/textAppearanceBody2"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textColor="?android:textColorSecondary"
             app:layout_constraintEnd_toEndOf="@id/petNameTextView"
             app:layout_constraintStart_toStartOf="@id/petNameTextView"
-            app:layout_constraintTop_toBottomOf="@id/petTypeTextView" />
+            app:layout_constraintTop_toBottomOf="@id/petTypeChip"
+            tools:text="Golden Retriever" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

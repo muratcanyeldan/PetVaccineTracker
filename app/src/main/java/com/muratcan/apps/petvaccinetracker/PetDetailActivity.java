@@ -40,8 +40,9 @@ import java.util.List;
 public class PetDetailActivity extends AppCompatActivity implements VaccineAdapter.OnVaccineClickListener {
     private Pet pet;
     private ImageView petImageView;
-    private TextView petTypeTextView;
-    private TextView petBreedTextView;
+    private TextView petNameTextView;
+    private com.google.android.material.chip.Chip petTypeChip;
+    private com.google.android.material.chip.Chip petBreedChip;
     private TextView petBirthDateTextView;
     private RecyclerView vaccineRecyclerView;
     private VaccineAdapter vaccineAdapter;
@@ -92,13 +93,32 @@ public class PetDetailActivity extends AppCompatActivity implements VaccineAdapt
 
     private void initializeViews() {
         petImageView = findViewById(R.id.petImageView);
-        petTypeTextView = findViewById(R.id.petTypeTextView);
-        petBreedTextView = findViewById(R.id.petBreedTextView);
+        petNameTextView = findViewById(R.id.petNameTextView);
+        petTypeChip = findViewById(R.id.petTypeChip);
+        petBreedChip = findViewById(R.id.petBreedChip);
         petBirthDateTextView = findViewById(R.id.petBirthDateTextView);
         vaccineRecyclerView = findViewById(R.id.vaccineRecyclerView);
         addVaccineFab = findViewById(R.id.addVaccineFab);
         emptyView = findViewById(R.id.emptyView);
         dateFormat = android.text.format.DateFormat.getDateFormat(this);
+
+        // Show empty view by default and hide recycler view
+        vaccineRecyclerView.setVisibility(View.GONE);
+        emptyView.setVisibility(View.VISIBLE);
+        emptyView.setAlpha(1f);
+        addVaccineFab.hide();
+
+        // Set up empty state add button
+        findViewById(R.id.emptyStateAddVaccineButton).setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddVaccineActivity.class);
+            intent.putExtra("pet_id", pet.getId());
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+                v,
+                "shared_element_container"
+            );
+            startActivity(intent, options.toBundle());
+        });
 
         // Set up FAB behavior
         vaccineRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -178,16 +198,41 @@ public class PetDetailActivity extends AppCompatActivity implements VaccineAdapt
         }
 
         // Set pet details
-        petTypeTextView.setText(pet.getType());
-        petBreedTextView.setText(pet.getBreed());
-        petBirthDateTextView.setText(dateFormat.format(pet.getBirthDate()));
+        petNameTextView.setText(pet.getName());
+        petTypeChip.setText(pet.getType());
+        petBreedChip.setText(pet.getBreed());
 
-        // Load vaccines
+        // Calculate and set age
+        com.google.android.material.chip.Chip petAgeChip = findViewById(R.id.petAgeChip);
+        if (petAgeChip != null && pet.getBirthDate() != null) {
+            // Calculate age
+            long ageInMillis = System.currentTimeMillis() - pet.getBirthDate().getTime();
+            int ageInYears = (int) (ageInMillis / (1000L * 60 * 60 * 24 * 365));
+            int ageInMonths = (int) (ageInMillis / (1000L * 60 * 60 * 24 * 30)) % 12;
+
+            String ageText;
+            if (ageInYears > 0) {
+                ageText = getResources().getQuantityString(R.plurals.years_old, ageInYears, ageInYears);
+                if (ageInMonths > 0) {
+                    ageText += " " + getResources().getQuantityString(R.plurals.months_old, ageInMonths, ageInMonths);
+                }
+            } else {
+                ageText = getResources().getQuantityString(R.plurals.months_old, ageInMonths, ageInMonths);
+            }
+            petAgeChip.setText(ageText);
+        }
+
+        // Set birth date
+        if (pet.getBirthDate() != null) {
+            petBirthDateTextView.setText(getString(R.string.born_on_date, dateFormat.format(pet.getBirthDate())));
+        }
+
+        // Start loading vaccines
         viewModel.loadVaccines(pet.getId());
     }
 
     private void observeViewModel() {
-        viewModel.loadVaccines(pet.getId());
+        // Remove duplicate loadVaccines call
         viewModel.getVaccines().observe(this, this::updateVaccineList);
         viewModel.getIsLoading().observe(this, this::updateLoadingState);
         viewModel.getError().observe(this, this::showError);
@@ -195,20 +240,23 @@ public class PetDetailActivity extends AppCompatActivity implements VaccineAdapt
     }
 
     private void updateVaccineList(List<Vaccine> vaccines) {
+        if (vaccines == null) return;
+        
         vaccineAdapter.updateVaccines(vaccines);
         updateEmptyView(vaccines.isEmpty());
-
-        // Show FAB with animation if list is not empty
-        if (!vaccines.isEmpty()) {
-            addVaccineFab.extend();
-        }
     }
 
     private void updateLoadingState(boolean isLoading) {
         if (isLoading) {
+            // Keep empty view visible while loading
+            emptyView.setVisibility(View.VISIBLE);
+            emptyView.setAlpha(1f);
+            vaccineRecyclerView.setVisibility(View.GONE);
             addVaccineFab.hide();
         } else {
-            addVaccineFab.show();
+            // Get current vaccines and update views
+            List<Vaccine> currentVaccines = vaccineAdapter.getVaccines();
+            updateEmptyView(currentVaccines == null || currentVaccines.isEmpty());
         }
     }
 
@@ -223,17 +271,34 @@ public class PetDetailActivity extends AppCompatActivity implements VaccineAdapt
 
     private void updateEmptyView(boolean isEmpty) {
         if (isEmpty) {
-            AnimationUtils.crossFadeViews(emptyView, vaccineRecyclerView);
-            addVaccineFab.extend();
+            // Show empty view with animation
+            emptyView.setVisibility(View.VISIBLE);
+            emptyView.setAlpha(1f);
+            vaccineRecyclerView.setVisibility(View.GONE);
+            addVaccineFab.hide();
         } else {
-            AnimationUtils.crossFadeViews(vaccineRecyclerView, emptyView);
+            // Show recycler view with animation
+            vaccineRecyclerView.setAlpha(0f);
+            vaccineRecyclerView.setVisibility(View.VISIBLE);
+            vaccineRecyclerView.animate()
+                .alpha(1f)
+                .setDuration(300)
+                .start();
+            emptyView.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction(() -> emptyView.setVisibility(View.GONE))
+                .start();
+            addVaccineFab.show();
+            addVaccineFab.extend();
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Refresh pet data from database
+        // Force a refresh of the vaccines
+        viewModel.refreshVaccines(pet.getId());
         viewModel.loadPetById(pet.getId());
     }
 
@@ -259,7 +324,37 @@ public class PetDetailActivity extends AppCompatActivity implements VaccineAdapt
     private void updatePetDetails(Pet updatedPet) {
         if (updatedPet != null) {
             pet = updatedPet;
-            loadPetDetails();
+            // Update UI elements
+            if (pet.getImageUri() != null) {
+                ImageUtils.loadImage(this, pet.getImageUri(), petImageView);
+            }
+            petNameTextView.setText(pet.getName());
+            petTypeChip.setText(pet.getType());
+            petBreedChip.setText(pet.getBreed());
+            
+            // Update birth date and age
+            if (pet.getBirthDate() != null) {
+                petBirthDateTextView.setText(getString(R.string.born_on_date, dateFormat.format(pet.getBirthDate())));
+                
+                // Update age chip
+                com.google.android.material.chip.Chip petAgeChip = findViewById(R.id.petAgeChip);
+                if (petAgeChip != null) {
+                    long ageInMillis = System.currentTimeMillis() - pet.getBirthDate().getTime();
+                    int ageInYears = (int) (ageInMillis / (1000L * 60 * 60 * 24 * 365));
+                    int ageInMonths = (int) (ageInMillis / (1000L * 60 * 60 * 24 * 30)) % 12;
+
+                    String ageText;
+                    if (ageInYears > 0) {
+                        ageText = getResources().getQuantityString(R.plurals.years_old, ageInYears, ageInYears);
+                        if (ageInMonths > 0) {
+                            ageText += " " + getResources().getQuantityString(R.plurals.months_old, ageInMonths, ageInMonths);
+                        }
+                    } else {
+                        ageText = getResources().getQuantityString(R.plurals.months_old, ageInMonths, ageInMonths);
+                    }
+                    petAgeChip.setText(ageText);
+                }
+            }
         }
     }
 } 

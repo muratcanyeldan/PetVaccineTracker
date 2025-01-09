@@ -55,8 +55,13 @@ public class VaccineAdapter extends RecyclerView.Adapter<VaccineAdapter.VaccineV
 
     public void updateVaccines(List<Vaccine> newVaccines) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new VaccineDiffCallback(vaccines, newVaccines));
-        vaccines = new ArrayList<>(newVaccines);
+        vaccines.clear();
+        vaccines.addAll(newVaccines);
         diffResult.dispatchUpdatesTo(this);
+    }
+
+    public List<Vaccine> getVaccines() {
+        return vaccines;
     }
 
     private static class VaccineDiffCallback extends DiffUtil.Callback {

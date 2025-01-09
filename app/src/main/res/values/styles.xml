@@ -81,19 +81,29 @@
         <item name="android:ellipsize">end</item>
     </style>
 
-    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar.Surface">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">@android:color/transparent</item>
         <item name="contentInsetStartWithNavigation">8dp</item>
         <item name="contentInsetStart">16dp</item>
         <item name="contentInsetEnd">16dp</item>
-        <item name="android:theme">@style/ThemeOverlay.Material3.Dark.ActionBar</item>
-        <item name="popupTheme">@style/ThemeOverlay.Material3.Light</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Material3.TitleLarge</item>
     </style>
 
-    <style name="Widget.App.Toolbar.Surface" parent="Widget.Material3.Toolbar.Surface">
-        <item name="contentInsetStartWithNavigation">8dp</item>
-        <item name="contentInsetStart">16dp</item>
-        <item name="contentInsetEnd">16dp</item>
-        <item name="android:theme">@style/ThemeOverlay.Material3.Dark.ActionBar</item>
-        <item name="popupTheme">@style/ThemeOverlay.Material3.Light</item>
+    <style name="Widget.App.Toolbar.Button" parent="Widget.Material3.Button.IconButton">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
+    <style name="Widget.App.AppBarLayout" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="elevation">0dp</item>
+        <item name="android:fitsSystemWindows">true</item>
     </style>
 </resources> 

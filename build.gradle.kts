@@ -11,6 +11,6 @@ buildscript {
         maven { url = uri("https://jitpack.io") }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.1.0")
+        classpath(libs.gradle)
     }
 }

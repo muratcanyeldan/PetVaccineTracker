@@ -1,13 +1,17 @@
 package com.muratcan.apps.petvaccinetracker;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -15,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback;
@@ -43,6 +48,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Request notification permission for Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 100);
+            }
+        }
+
         // Initialize Firebase Helper
         firebaseHelper = new FirebaseHelper();
 
@@ -50,8 +62,11 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("My Pets");
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
+
+        // Set up toolbar buttons
+        setupToolbarButtons();
 
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(PetViewModel.class);
@@ -69,19 +84,43 @@ public class MainActivity extends AppCompatActivity {
         viewModel.loadPets();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    private void setupToolbarButtons() {
+        // Set up search
+        SearchView searchView = findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                viewModel.filterPets(newText);
+                return true;
+            }
+        });
+
+        // Set up sort button
+        ImageButton sortButton = findViewById(R.id.sortButton);
+        sortButton.setOnClickListener(v -> showSortDialog());
+
+        // Set up logout button
+        ImageButton logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(v -> logout());
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_logout) {
-            logout();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    private void showSortDialog() {
+        String[] sortOptions = {"Sort by Name", "Sort by Date"};
+        new MaterialAlertDialogBuilder(this)
+            .setTitle("Sort Pets")
+            .setItems(sortOptions, (dialog, which) -> {
+                if (which == 0) {
+                    viewModel.sortByName();
+                } else {
+                    viewModel.sortByDate();
+                }
+            })
+            .show();
     }
 
     private void logout() {
@@ -97,6 +136,15 @@ public class MainActivity extends AppCompatActivity {
         addPetFab = findViewById(R.id.addPetFab);
         emptyView = findViewById(R.id.emptyView);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+
+        // Initially hide FAB since we don't know if we have pets yet
+        addPetFab.hide();
+
+        // Set up empty state add button
+        findViewById(R.id.emptyStateAddButton).setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddPetActivity.class);
+            startActivity(intent);
+        });
 
         addPetFab.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddPetActivity.class);
@@ -138,9 +186,12 @@ public class MainActivity extends AppCompatActivity {
         if (pets == null || pets.isEmpty()) {
             emptyView.setVisibility(View.VISIBLE);
             petRecyclerView.setVisibility(View.GONE);
+            addPetFab.hide();
         } else {
             emptyView.setVisibility(View.GONE);
             petRecyclerView.setVisibility(View.VISIBLE);
+            addPetFab.show();
+            addPetFab.extend();
             petAdapter.updatePets(pets);
         }
     }
@@ -150,7 +201,11 @@ public class MainActivity extends AppCompatActivity {
         if (isLoading) {
             addPetFab.hide();
         } else {
-            addPetFab.show();
+            // Only show FAB if we're not in empty state
+            if (petRecyclerView.getVisibility() == View.VISIBLE) {
+                addPetFab.show();
+                addPetFab.extend();
+            }
         }
     }
 

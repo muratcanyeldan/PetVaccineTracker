@@ -9,16 +9,12 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp">
+        style="@style/Widget.App.AppBarLayout">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent"
+            style="@style/Widget.App.Toolbar"
             app:navigationIcon="@drawable/ic_close"
-            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
             app:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
     </com.google.android.material.appbar.AppBarLayout>

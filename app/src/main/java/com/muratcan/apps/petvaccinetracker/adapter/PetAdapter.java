@@ -95,7 +95,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
     public static class PetViewHolder extends RecyclerView.ViewHolder {
         private final ImageView petImageView;
         private final TextView petNameTextView;
-        private final TextView petTypeTextView;
+        private final com.google.android.material.chip.Chip petTypeChip;
         private final TextView petBreedTextView;
         private final View cardView;
 
@@ -104,7 +104,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
             cardView = itemView.findViewById(R.id.cardView);
             petImageView = itemView.findViewById(R.id.petImageView);
             petNameTextView = itemView.findViewById(R.id.petNameTextView);
-            petTypeTextView = itemView.findViewById(R.id.petTypeTextView);
+            petTypeChip = itemView.findViewById(R.id.petTypeChip);
             petBreedTextView = itemView.findViewById(R.id.petBreedTextView);
         }
 
@@ -114,7 +114,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
             cardView.setTag(transitionName);
 
             petNameTextView.setText(pet.getName());
-            petTypeTextView.setText(pet.getType());
+            petTypeChip.setText(pet.getType());
             petBreedTextView.setText(pet.getBreed());
 
             if (pet.getImageUri() != null) {

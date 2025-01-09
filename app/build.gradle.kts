@@ -68,4 +68,7 @@ dependencies {
 
     // PhotoView for zoomable images
     implementation(libs.photoview)
+
+    // Lottie animation
+    implementation(libs.lottie)
 }

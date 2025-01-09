@@ -52,4 +52,28 @@ public class ImageUtils {
             imageView.setImageResource(R.drawable.ic_pet_placeholder);
         }
     }
+
+    public static void loadImage(Context context, Uri imageUri, ImageView imageView) {
+        if (imageUri != null) {
+            // When loading an actual image
+            Glide.with(context)
+                .load(imageUri)
+                .centerCrop()
+                .into(imageView);
+            
+            // Reset placeholder styling
+            imageView.setPadding(0, 0, 0, 0);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setColorFilter(null);
+        } else {
+            // When showing placeholder
+            imageView.setImageResource(R.drawable.ic_pet_placeholder);
+            imageView.setPadding(context.getResources().getDimensionPixelSize(R.dimen.image_placeholder_padding), 
+                               context.getResources().getDimensionPixelSize(R.dimen.image_placeholder_padding),
+                               context.getResources().getDimensionPixelSize(R.dimen.image_placeholder_padding),
+                               context.getResources().getDimensionPixelSize(R.dimen.image_placeholder_padding));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            imageView.setColorFilter(context.getResources().getColor(R.color.md_theme_light_outline, context.getTheme()));
+        }
+    }
 } 

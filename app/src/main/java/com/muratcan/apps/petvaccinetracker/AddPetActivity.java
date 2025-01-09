@@ -142,6 +142,18 @@ public class AddPetActivity extends AppCompatActivity {
         petImageView = findViewById(R.id.petImageView);
         addButton = findViewById(R.id.addButton);
         dateFormat = android.text.format.DateFormat.getDateFormat(this);
+
+        // Set the appropriate button text and icon based on whether we're editing or adding
+        if (existingPet != null) {
+            addButton.setText(R.string.button_update);
+            addButton.setIconResource(R.drawable.ic_save);
+        } else {
+            addButton.setText(R.string.button_add);
+            addButton.setIconResource(R.drawable.ic_add);
+        }
+
+        // Set up cancel button
+        findViewById(R.id.cancelButton).setOnClickListener(v -> confirmExit());
     }
 
     private void setupToolbar() {
@@ -242,18 +254,60 @@ public class AddPetActivity extends AppCompatActivity {
             return;
         }
 
-        // Create pet object
-        Pet pet = new Pet(
-            name,
-            type,
-            breed,
-            selectedDate,
-            isImageChanged ? selectedImageUri : null,
-            auth.getCurrentUser().getUid()
-        );
+        Pet petToSave;
+        if (existingPet != null) {
+            // Update existing pet
+            petToSave = existingPet;
+            petToSave.setName(name);
+            petToSave.setType(type);
+            petToSave.setBreed(breed);
+            petToSave.setBirthDate(selectedDate);
+            if (isImageChanged) {
+                petToSave.setImageUri(selectedImageUri != null ? selectedImageUri.toString() : null);
+            }
+        } else {
+            // Create new pet
+            petToSave = new Pet(
+                name,
+                type,
+                breed,
+                selectedDate,
+                isImageChanged ? selectedImageUri : null,
+                auth.getCurrentUser().getUid()
+            );
+        }
 
-        // Add pet
-        viewModel.addPet(pet);
+        // Save pet
+        new Thread(() -> {
+            try {
+                AppDatabase db = AppDatabase.getInstance(this);
+                if (existingPet != null) {
+                    // Update existing pet
+                    db.petDao().update(petToSave);
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, R.string.pet_updated_successfully, Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                } else {
+                    // Add new pet
+                    long id = db.petDao().insert(petToSave);
+                    petToSave.setId(id);
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, R.string.pet_added_successfully, Toast.LENGTH_SHORT).show();
+                        showRecommendedVaccinesDialog();
+                    });
+                }
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    String errorMessage = existingPet != null ? 
+                        getString(R.string.error_updating_pet) : 
+                        getString(R.string.error_adding_pet);
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+                    addButton.setEnabled(true);
+                });
+            }
+        }).start();
+        
         addButton.setEnabled(false);
         AnimationUtils.pulseAnimation(addButton);
     }
@@ -270,7 +324,11 @@ public class AddPetActivity extends AppCompatActivity {
 
     private void updateLoadingState(boolean isLoading) {
         addButton.setEnabled(!isLoading);
-        addButton.setText(isLoading ? R.string.button_adding : R.string.button_add);
+        if (isLoading) {
+            addButton.setText(existingPet != null ? R.string.button_updating : R.string.button_adding);
+        } else {
+            addButton.setText(existingPet != null ? R.string.button_update : R.string.button_add);
+        }
     }
 
     private void showError(String error) {
@@ -340,7 +398,9 @@ public class AddPetActivity extends AppCompatActivity {
             selectedImageUri = Uri.parse(existingPet.getImageUri());
             ImageUtils.loadImage(this, selectedImageUri, petImageView);
         }
+        // Update both button text and icon for edit mode
         addButton.setText(R.string.button_update);
+        addButton.setIconResource(R.drawable.ic_save);
     }
 
     private boolean hasUnsavedChanges() {

@@ -36,19 +36,7 @@
     <color name="md_theme_light_outlineVariant">#BFC9C2</color>
     <color name="md_theme_light_scrim">#000000</color>
 
-    <!-- Additional colors -->
-    <color name="warning">#FFA726</color>
-    <color name="accent">@color/md_theme_light_secondary</color>
-    <color name="cardBackground">@color/md_theme_light_surfaceVariant</color>
-    <color name="ripple">@color/md_theme_light_onSurfaceVariant</color>
-
-    <!-- Preview Dialog Colors -->
-    <color name="preview_background">#CC000000</color>
-    <color name="preview_toolbar_background">#66000000</color>
-
-    <color name="error">#B00020</color>
-    <color name="textSecondary">#757575</color>
-
+    <!-- Material Design 3 colors - Dark theme -->
     <color name="md_theme_dark_primary">#6CDBAC</color>
     <color name="md_theme_dark_onPrimary">#003823</color>
     <color name="md_theme_dark_primaryContainer">#005235</color>
@@ -80,5 +68,15 @@
     <color name="md_theme_dark_outlineVariant">#404943</color>
     <color name="md_theme_dark_scrim">#000000</color>
 
-    <color name="seed">#006C48</color>
+    <!-- Custom colors -->
+    <color name="background">@color/md_theme_light_background</color>
+    <color name="error">@color/md_theme_light_error</color>
+    <color name="warning">#FFA726</color>
+    <color name="accent">@color/md_theme_light_secondary</color>
+    <color name="cardBackground">@color/md_theme_light_surfaceVariant</color>
+    <color name="ripple">@color/md_theme_light_onSurfaceVariant</color>
+
+    <!-- Preview Dialog Colors -->
+    <color name="preview_background">#CC000000</color>
+    <color name="preview_toolbar_background">#66000000</color>
 </resources>

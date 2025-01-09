@@ -3,18 +3,72 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        style="@style/Widget.App.AppBarLayout">
 
-        <com.google.android.material.appbar.MaterialToolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:menu="@menu/menu_main"
-            style="@style/Widget.Material3.Toolbar.Surface" />
+            android:background="@android:color/transparent"
+            app:titleTextAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+            style="@style/Widget.App.Toolbar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp">
+
+                <TextView
+                    android:id="@+id/toolbarTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="My Pets"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+
+                <androidx.appcompat.widget.SearchView
+                    android:id="@+id/searchView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    app:iconifiedByDefault="true"
+                    app:queryHint="Search pets" />
+
+                <ImageButton
+                    android:id="@+id/sortButton"
+                    style="@style/Widget.App.Toolbar.Button"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="?attr/actionBarItemBackground"
+                    android:contentDescription="Sort"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_sort" />
+
+                <ImageButton
+                    android:id="@+id/logoutButton"
+                    style="@style/Widget.App.Toolbar.Button"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/actionBarItemBackground"
+                    android:contentDescription="@string/logout"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_logout" />
+
+            </LinearLayout>
+
+        </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -33,37 +87,43 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:padding="8dp" />
+                android:paddingHorizontal="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="88dp" />
 
             <LinearLayout
                 android:id="@+id/emptyView"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:orientation="vertical"
+                android:padding="32dp"
                 android:visibility="gone">
 
-                <ImageView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:src="@drawable/ic_pet_placeholder"
-                    android:alpha="0.5" />
+                <com.airbnb.lottie.LottieAnimationView
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/pet_animation" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="24dp"
                     android:text="@string/no_pets"
-                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall" />
 
-                <TextView
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/emptyStateAddButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/add_first_pet"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:textColorSecondary" />
+                    android:layout_marginTop="24dp"
+                    android:text="@string/add_pet"
+                    app:icon="@drawable/ic_add"
+                    style="@style/Widget.Material3.Button.TonalButton" />
 
             </LinearLayout>
 
@@ -78,6 +138,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:text="@string/add_pet"
-        app:icon="@drawable/ic_add" />
+        app:icon="@drawable/ic_add"
+        style="@style/Widget.Material3.ExtendedFloatingActionButton.Primary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout> 
