@@ -34,7 +34,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="My Pets"
+                    android:text="@string/title_my_pets"
                     android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
                 <androidx.appcompat.widget.SearchView
@@ -52,8 +52,9 @@
                     android:layout_height="48dp"
                     android:layout_marginEnd="8dp"
                     android:background="?attr/actionBarItemBackground"
-                    android:contentDescription="Sort"
+                    android:contentDescription="@string/title_sort"
                     android:padding="12dp"
+                    app:tint="?attr/colorOnSurface"
                     android:src="@drawable/ic_sort" />
 
                 <ImageButton
@@ -64,6 +65,7 @@
                     android:background="?attr/actionBarItemBackground"
                     android:contentDescription="@string/logout"
                     android:padding="12dp"
+                    app:tint="?attr/colorOnSurface"
                     android:src="@drawable/ic_logout" />
 
             </LinearLayout>
@@ -109,6 +111,7 @@
                     app:lottie_rawRes="@raw/pet_animation" />
 
                 <TextView
+                    android:id="@+id/emptyTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
@@ -137,8 +140,15 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
+        android:minWidth="180dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
         android:text="@string/add_pet"
         app:icon="@drawable/ic_add"
+        app:iconPadding="12dp"
         style="@style/Widget.Material3.ExtendedFloatingActionButton.Primary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout> 

@@ -85,7 +85,8 @@
                         android:id="@+id/vaccine_type_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="none" />
+                        android:inputType="none"
+                        android:hint="@string/select_vaccine_type" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.card.MaterialCardView
@@ -123,7 +124,8 @@
                                 android:id="@+id/recurring_period_input"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="none" />
+                                android:inputType="none"
+                                android:hint="@string/select_frequency" />
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

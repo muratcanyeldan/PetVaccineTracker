@@ -62,6 +62,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|end"
                         android:layout_margin="8dp"
+                        android:contentDescription="@string/select_image"
                         app:fabSize="mini"
                         app:srcCompat="@drawable/ic_camera"
                         style="@style/Widget.Material3.FloatingActionButton.Small.Primary" />
@@ -92,7 +93,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:hint="@string/hint_pet_type"
+                    android:hint="@string/select_pet_type"
                     app:errorEnabled="true"
                     app:startIconDrawable="@drawable/ic_pets"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">

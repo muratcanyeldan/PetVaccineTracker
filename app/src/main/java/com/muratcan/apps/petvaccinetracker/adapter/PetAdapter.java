@@ -1,5 +1,6 @@
 package com.muratcan.apps.petvaccinetracker.adapter;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,7 +119,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
             petBreedTextView.setText(pet.getBreed());
 
             if (pet.getImageUri() != null) {
-                ImageUtils.loadImage(itemView.getContext(), pet.getImageUri(), petImageView);
+                ImageUtils.loadImage(itemView.getContext(), Uri.parse(pet.getImageUri()), petImageView);
             } else {
                 petImageView.setImageResource(R.drawable.ic_pet_placeholder);
             }

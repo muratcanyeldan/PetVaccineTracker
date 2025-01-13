@@ -1,5 +1,6 @@
 package com.muratcan.apps.petvaccinetracker;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -7,22 +8,24 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback;
 import com.muratcan.apps.petvaccinetracker.adapter.PetAdapter;
 import com.muratcan.apps.petvaccinetracker.model.Pet;
 import com.muratcan.apps.petvaccinetracker.util.FirebaseHelper;
@@ -31,66 +34,109 @@ import com.muratcan.apps.petvaccinetracker.viewmodel.PetViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class MainActivity extends AppCompatActivity {
     private RecyclerView petRecyclerView;
     private PetAdapter petAdapter;
-    private View emptyView;
     private ExtendedFloatingActionButton addPetFab;
+    private View emptyView;
     private PetViewModel viewModel;
+    private SearchView searchView;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeRefreshLayout;
     private FirebaseHelper firebaseHelper;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private ActivityResultLauncher<String> requestPermissionLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-        setExitSharedElementCallback(new MaterialContainerTransformSharedElementCallback());
-        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Request notification permission for Android 13+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 100);
-            }
-        }
-
-        // Initialize Firebase Helper
         firebaseHelper = new FirebaseHelper();
-
-        // Set up toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-
-        // Set up toolbar buttons
-        setupToolbarButtons();
-
-        // Initialize ViewModel
-        viewModel = new ViewModelProvider(this).get(PetViewModel.class);
-
-        // Initialize views
-        initializeViews();
-
-        // Set up RecyclerView
+        setupPermissions();
+        initViews();
         setupRecyclerView();
+        setupFab();
+        setupSwipeRefresh();
 
-        // Observe ViewModel
+        viewModel = new ViewModelProvider(this).get(PetViewModel.class);
         observeViewModel();
-
-        // Load pets
-        viewModel.loadPets();
     }
 
-    private void setupToolbarButtons() {
-        // Set up search
-        SearchView searchView = findViewById(R.id.searchView);
+    private void setupPermissions() {
+        requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            isGranted -> {
+                if (isGranted) {
+                    Timber.d("Notification permission granted");
+                } else {
+                    Snackbar.make(
+                        findViewById(android.R.id.content),
+                        "Notifications are disabled. You won't receive vaccine reminders.",
+                        Snackbar.LENGTH_LONG
+                    ).show();
+                }
+            }
+        );
+
+        // Check and request notification permission for Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+    }
+
+    private void initViews() {
+        petRecyclerView = findViewById(R.id.petRecyclerView);
+        addPetFab = findViewById(R.id.addPetFab);
+        emptyView = findViewById(R.id.emptyView);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        
+        // Setup toolbar
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        
+        // Setup sort button
+        ImageButton sortButton = findViewById(R.id.sortButton);
+        sortButton.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(MainActivity.this, sortButton);
+            popup.getMenuInflater().inflate(R.menu.menu_main, popup.getMenu());
+            
+            // Remove the search item from popup menu
+            popup.getMenu().removeItem(R.id.action_search);
+            
+            popup.setOnMenuItemClickListener(item -> {
+                int id = item.getItemId();
+                if (id == R.id.action_sort_name) {
+                    Timber.d("Selected sort by name");
+                    viewModel.sortByName();
+                    return true;
+                } else if (id == R.id.action_sort_date) {
+                    Timber.d("Selected sort by date");
+                    viewModel.sortByDate();
+                    return true;
+                } else if (id == R.id.action_sort_none) {
+                    Timber.d("Selected clear sort");
+                    viewModel.clearSort();
+                    return true;
+                }
+                return false;
+            });
+            popup.show();
+        });
+        
+        // Setup search view
+        searchView = findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                viewModel.filterPets(query);
+                return true;
             }
 
             @Override
@@ -99,60 +145,56 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        
+        // Setup empty state add button
+        View emptyStateButton = findViewById(R.id.emptyStateAddButton);
+        if (emptyStateButton != null) {
+            emptyStateButton.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, AddPetActivity.class);
+                startActivity(intent);
+            });
+        }
 
-        // Set up sort button
-        ImageButton sortButton = findViewById(R.id.sortButton);
-        sortButton.setOnClickListener(v -> showSortDialog());
-
-        // Set up logout button
-        ImageButton logoutButton = findViewById(R.id.logoutButton);
-        logoutButton.setOnClickListener(v -> logout());
-    }
-
-    private void showSortDialog() {
-        String[] sortOptions = {"Sort by Name", "Sort by Date"};
-        new MaterialAlertDialogBuilder(this)
-            .setTitle("Sort Pets")
-            .setItems(sortOptions, (dialog, which) -> {
-                if (which == 0) {
-                    viewModel.sortByName();
-                } else {
-                    viewModel.sortByDate();
-                }
-            })
-            .show();
-    }
-
-    private void logout() {
-        firebaseHelper.signOut();
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-    private void initializeViews() {
-        petRecyclerView = findViewById(R.id.petRecyclerView);
-        addPetFab = findViewById(R.id.addPetFab);
-        emptyView = findViewById(R.id.emptyView);
-        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
-
-        // Initially hide FAB since we don't know if we have pets yet
-        addPetFab.hide();
-
-        // Set up empty state add button
-        findViewById(R.id.emptyStateAddButton).setOnClickListener(v -> {
-            Intent intent = new Intent(this, AddPetActivity.class);
-            startActivity(intent);
+        // Setup logout button
+        findViewById(R.id.logoutButton).setOnClickListener(v -> {
+            // Show confirmation dialog
+            new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.logout_confirmation)
+                .setMessage(R.string.logout_message)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    try {
+                        // Sign out from Firebase
+                        firebaseHelper.signOut();
+                        Timber.d("User signed out successfully");
+                        
+                        // Clear all activities and start LoginActivity
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        // Kill the current task to prevent going back
+                        finishAndRemoveTask();
+                    } catch (Exception e) {
+                        Timber.e(e, "Error logging out: %s", e.getMessage());
+                        Snackbar.make(v, "Error logging out: " + e.getMessage(), 
+                            Snackbar.LENGTH_LONG).show();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
         });
+    }
 
-        addPetFab.setOnClickListener(v -> {
-            Intent intent = new Intent(this, AddPetActivity.class);
-            startActivity(intent);
+    private void setupSwipeRefresh() {
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            viewModel.refreshPets();
         });
+    }
 
-        // Set up SwipeRefreshLayout
-        swipeRefreshLayout.setOnRefreshListener(() -> viewModel.loadPets());
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh the pet list when returning to this screen
+        viewModel.refreshPets();
     }
 
     private void setupRecyclerView() {
@@ -163,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
             String transitionName = "pet_card_" + pet.getId();
             View sharedView = petRecyclerView.findViewWithTag(transitionName);
             if (sharedView != null) {
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                androidx.core.app.ActivityOptionsCompat options = androidx.core.app.ActivityOptionsCompat.makeSceneTransitionAnimation(
                     MainActivity.this,
                     sharedView,
                     transitionName
@@ -176,51 +218,88 @@ public class MainActivity extends AppCompatActivity {
         petRecyclerView.setAdapter(petAdapter);
     }
 
+    private void setupFab() {
+        addPetFab.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AddPetActivity.class);
+            startActivity(intent);
+        });
+    }
+
     private void observeViewModel() {
-        viewModel.getPets().observe(this, this::updatePetList);
-        viewModel.getIsLoading().observe(this, this::updateLoadingState);
-        viewModel.getError().observe(this, this::showError);
+        // Observe StateFlow values using DefaultLifecycleObserver
+        getLifecycle().addObserver(new DefaultLifecycleObserver() {
+            @Override
+            public void onStart(LifecycleOwner owner) {
+                // Observe pets using LiveData
+                viewModel.getPetsLiveData().observe(MainActivity.this, MainActivity.this::updatePetList);
+                
+                // Observe loading state using LiveData
+                viewModel.getIsLoadingLiveData().observe(MainActivity.this, MainActivity.this::updateLoadingState);
+                
+                // Observe error state using LiveData
+                viewModel.getErrorLiveData().observe(MainActivity.this, MainActivity.this::showError);
+            }
+        });
     }
 
     private void updatePetList(List<Pet> pets) {
-        if (pets == null || pets.isEmpty()) {
+        if (pets == null) return;
+        
+        petAdapter.updatePets(pets);
+        updateEmptyView(pets.isEmpty());
+    }
+
+    private void updateLoadingState(Boolean isLoading) {
+        if (isLoading != null && isLoading) {
+            // Show loading indicator
+            swipeRefreshLayout.setRefreshing(true);
+            if (petAdapter.getItemCount() == 0) {
+                emptyView.setVisibility(View.VISIBLE);
+                petRecyclerView.setVisibility(View.GONE);
+                addPetFab.hide();
+            }
+        } else {
+            // Update visibility based on whether we have pets
+            swipeRefreshLayout.setRefreshing(false);
+            updateEmptyView(petAdapter.getItemCount() == 0);
+        }
+    }
+
+    private void showError(String error) {
+        if (error != null && !error.isEmpty()) {
+            Snackbar.make(petRecyclerView, error, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void updateEmptyView(boolean isEmpty) {
+        if (isEmpty) {
             emptyView.setVisibility(View.VISIBLE);
             petRecyclerView.setVisibility(View.GONE);
             addPetFab.hide();
+            
+            // Make sure the empty state button is visible
+            View emptyStateButton = findViewById(R.id.emptyStateAddButton);
+            if (emptyStateButton != null) {
+                emptyStateButton.setVisibility(View.VISIBLE);
+            }
+            
+            ((TextView) emptyView.findViewById(R.id.emptyTextView))
+                .setText(R.string.no_pets_found);
         } else {
             emptyView.setVisibility(View.GONE);
             petRecyclerView.setVisibility(View.VISIBLE);
             addPetFab.show();
             addPetFab.extend();
-            petAdapter.updatePets(pets);
-        }
-    }
-
-    private void updateLoadingState(boolean isLoading) {
-        swipeRefreshLayout.setRefreshing(isLoading);
-        if (isLoading) {
-            addPetFab.hide();
-        } else {
-            // Only show FAB if we're not in empty state
-            if (petRecyclerView.getVisibility() == View.VISIBLE) {
-                addPetFab.show();
-                addPetFab.extend();
-            }
-        }
-    }
-
-    private void showError(String error) {
-        if (error != null) {
-            Snackbar.make(petRecyclerView, error, Snackbar.LENGTH_LONG)
-                .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
-                .setAction("Retry", v -> viewModel.loadPets())
-                .show();
         }
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        viewModel.loadPets();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 } 

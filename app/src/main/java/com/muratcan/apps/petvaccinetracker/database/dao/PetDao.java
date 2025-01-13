@@ -1,4 +1,4 @@
-package com.muratcan.apps.petvaccinetracker.database;
+package com.muratcan.apps.petvaccinetracker.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -32,12 +32,6 @@ public interface PetDao {
     @Transaction
     @Query("DELETE FROM vaccines WHERE petId = :petId")
     void deleteAllVaccinesForPet(long petId);
-
-    @Transaction
-    default void deletePetAndVaccines(Pet pet) {
-        deleteAllVaccinesForPet(pet.getId());
-        delete(pet);
-    }
 
     @Query("SELECT * FROM pets ORDER BY id DESC LIMIT 1")
     Pet getLastAddedPet();

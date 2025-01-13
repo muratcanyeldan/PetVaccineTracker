@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">Pet Vaccine Tracker</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="sort_content_description">Sort</string>
+    <string name="empty_state_description">Empty state illustration</string>
+    <string name="delete_vaccine_description">Delete vaccine</string>
 
     <!-- Common Actions -->
     <string name="action_save">Save</string>
@@ -12,6 +19,8 @@
     <string name="action_back">Back</string>
     <string name="cancel">Cancel</string>
     <string name="discard">Discard</string>
+    <string name="required_field">This field is required</string>
+    <string name="saving">Saving…</string>
 
     <!-- Add/Edit Pet -->
     <string name="title_add_pet">Add Pet</string>
@@ -22,10 +31,14 @@
     <string name="hint_pet_breed">Breed</string>
     <string name="hint_birth_date">Birth Date</string>
     <string name="select_birth_date">Select Birth Date</string>
+    <string name="select_pet_type">Select pet type</string>
+    <string name="select_vaccine_type">Select vaccine type</string>
+    <string name="select_frequency">Select frequency</string>
     <string name="button_add">Add</string>
     <string name="button_adding">Adding…</string>
     <string name="button_update">Update Pet</string>
     <string name="button_updating">Updating…</string>
+    <string name="update_pet">Update Pet</string>
     <string name="pet_added_successfully">Pet added successfully</string>
     <string name="pet_updated_successfully">Pet updated successfully</string>
     <string name="pet_deleted">Pet deleted</string>
@@ -34,6 +47,7 @@
     <string name="pet_details">Pet Details</string>
     <string name="vaccines">Vaccines</string>
     <string name="no_pets">No Pets Yet</string>
+    <string name="no_pets_found">No pets found</string>
     <string name="add_first_pet">Add your first pet to get started</string>
     <string name="no_vaccines">No Vaccines</string>
     <string name="add_first_vaccine">Add your first vaccine record</string>
@@ -88,8 +102,7 @@
     <!-- Image Handling -->
     <string name="select_image">Select Image</string>
     <string name="crop_image">Crop Image</string>
-    <string name="error_loading_image">Error loading image</string>
-    <string name="error_saving_image">Error saving image</string>
+    <string name="permission_denied_message">Storage permission is required to select images</string>
 
     <!-- Error Messages -->
     <string name="error_loading_pets">Error loading pets</string>
@@ -103,6 +116,7 @@
     <string name="error_saving_vaccine">Error saving vaccine</string>
     <string name="error_pet_not_found">Error: Pet not found</string>
     <string name="error_unknown">Unknown error occurred</string>
+    <string name="error_processing_date">Error processing date</string>
 
     <!-- Vaccine Status -->
     <string name="vaccine_administered_date">Administered on %s</string>
@@ -114,7 +128,6 @@
     <string name="vaccine_due_today">Due today</string>
     <string name="vaccine_due_in_days">Due in %d days</string>
     <string name="vaccine_due_date">Due on %s</string>
-    <string name="error_processing_date">Error processing date</string>
     <string name="vaccine_administered_text">Administered: %1$s</string>
     <string name="vaccine_not_administered_text">Not yet administered</string>
     <string name="vaccine_next_due_text">Next Due: %1$s</string>
@@ -124,10 +137,31 @@
 
     <!-- Notifications -->
     <string name="channel_name">Vaccine Reminders</string>
-    <string name="channel_description">Notifications for upcoming pet vaccine due dates</string>
+    <string name="channel_description">Notifications for upcoming vaccine due dates</string>
     <string name="vaccine_due_notification_title">Vaccine Due</string>
     <string name="vaccine_due_notification_text">%1$s\'s %2$s vaccine is due</string>
 
+    <!-- Menu Items -->
+    <string name="action_search">Search</string>
+    <string name="action_sort_name">Sort by Name</string>
+    <string name="action_sort_date">Sort by Date</string>
+    <string name="action_sort_none">Clear Sort</string>
+
     <!-- Other -->
     <string name="logout">Logout</string>
+
+    <!-- Titles -->
+    <string name="title_my_pets">My Pets</string>
+    <string name="title_sort">Sort</string>
+
+    <string name="logout_confirmation">Logout</string>
+    <string name="logout_message">Are you sure you want to logout?</string>
+
+    <string name="future_date_error">Birth date cannot be in the future</string>
+
+    <!-- Image handling error messages -->
+    <string name="error_processing_image">Error processing the selected image</string>
+    <string name="error_loading_image">Error loading the image</string>
+    <string name="error_saving_image">Error saving the image</string>
+    <string name="error_no_camera">No camera app available</string>
 </resources>

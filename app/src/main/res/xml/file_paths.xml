@@ -5,7 +5,7 @@
         path="." />
     <files-path
         name="pet_images"
-        path="images/" />
+        path="pet_images/" />
     <external-cache-path
         name="external_images"
         path="." />

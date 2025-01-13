@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
-    id("com.google.gms.google-services")
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.gms)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -15,6 +18,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     buildTypes {
@@ -31,9 +37,39 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 }
 
 dependencies {
+    val composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    // Compose
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.navigation.compose)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // Existing dependencies
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
@@ -42,6 +78,7 @@ dependencies {
     
     // Image loading and caching
     implementation(libs.glide)
+    implementation(libs.landscapist.glide)  // Glide support for Compose
     annotationProcessor(libs.compiler)
     
     // Image Cropping
@@ -57,7 +94,8 @@ dependencies {
     
     // Room for local database
     implementation(libs.room.runtime)
-    annotationProcessor(libs.room.compiler)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)  // Using KSP for Room
     
     // Add desugaring for older Android versions
     coreLibraryDesugaring(libs.desugar.jdk.libs)
@@ -65,10 +103,18 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
     // PhotoView for zoomable images
     implementation(libs.photoview)
 
     // Lottie animation
     implementation(libs.lottie)
+    implementation(libs.lottie.compose)  // Lottie support for Compose
+
+    // Logging and crash reporting
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.crashlytics.ktx)
+    implementation(libs.timber)
 }

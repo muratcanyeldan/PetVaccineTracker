@@ -27,7 +27,8 @@
                     android:id="@+id/backButton"
                     style="@style/Widget.App.Toolbar.Button"
                     android:contentDescription="@string/action_back"
-                    android:src="@drawable/ic_arrow_back" />
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/toolbarTitle"
