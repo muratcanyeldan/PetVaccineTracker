@@ -36,4 +36,6 @@
     <dimen name="dialog_padding">24dp</dimen>
     <dimen name="dialog_corner_radius">28dp</dimen>
     <dimen name="dialog_elevation">24dp</dimen>
+    
+    <dimen name="image_placeholder_padding">32dp</dimen>
 </resources> 

@@ -1,12 +1,7 @@
 package com.muratcan.apps.petvaccinetracker;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,9 +9,10 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +25,6 @@ import com.muratcan.apps.petvaccinetracker.adapter.VaccineAdapter;
 import com.muratcan.apps.petvaccinetracker.database.AppDatabase;
 import com.muratcan.apps.petvaccinetracker.model.Pet;
 import com.muratcan.apps.petvaccinetracker.model.Vaccine;
-import com.muratcan.apps.petvaccinetracker.util.AnimationUtils;
 import com.muratcan.apps.petvaccinetracker.util.ImageUtils;
 import com.muratcan.apps.petvaccinetracker.viewmodel.PetViewModel;
 
@@ -37,11 +32,14 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class PetDetailActivity extends AppCompatActivity implements VaccineAdapter.OnVaccineClickListener {
     private Pet pet;
     private ImageView petImageView;
-    private TextView petTypeTextView;
-    private TextView petBreedTextView;
+    private TextView petNameTextView;
+    private com.google.android.material.chip.Chip petTypeChip;
+    private com.google.android.material.chip.Chip petBreedChip;
     private TextView petBirthDateTextView;
     private RecyclerView vaccineRecyclerView;
     private VaccineAdapter vaccineAdapter;
@@ -53,52 +51,64 @@ public class PetDetailActivity extends AppCompatActivity implements VaccineAdapt
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pet_detail);
+
+        // Get pet from intent first using backward-compatible approach
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            pet = getIntent().getParcelableExtra("pet", Pet.class);
+        } else {
+            pet = getIntent().getParcelableExtra("pet");
+        }
         
-        // Get pet from intent first
-        pet = getIntent().getParcelableExtra("pet");
         if (pet == null) {
             finish();
             return;
         }
-        
-        // Handle back button
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                supportFinishAfterTransition();
-            }
-        });
-        
-        setContentView(R.layout.activity_pet_detail);
-        
-        // Get the transition name from the extra and set it on root view
-        String transitionName = "pet_card_" + pet.getId();
-        View rootView = findViewById(R.id.root_view);
-        rootView.setTransitionName(transitionName);
 
-        // Initialize ViewModel
-        viewModel = new ViewModelProvider(this).get(PetViewModel.class);
-
-        // Initialize views
-        initializeViews();
-        setupToolbar();
+        // Initialize views and setup
+        initViews();
+        setupActionBar();
         setupRecyclerView();
-        setupAddVaccineButton();
+        setupFab();
+        setupBackPressedCallback();
 
-        // Load data
-        loadPetDetails();
+        // Initialize ViewModel and observe changes
+        viewModel = new ViewModelProvider(this).get(PetViewModel.class);
         observeViewModel();
+
+        // Load initial data
+        updatePetDetails(pet);
+        viewModel.loadVaccines(pet.getId());
     }
 
-    private void initializeViews() {
+    private void initViews() {
         petImageView = findViewById(R.id.petImageView);
-        petTypeTextView = findViewById(R.id.petTypeTextView);
-        petBreedTextView = findViewById(R.id.petBreedTextView);
+        petNameTextView = findViewById(R.id.petNameTextView);
+        petTypeChip = findViewById(R.id.petTypeChip);
+        petBreedChip = findViewById(R.id.petBreedChip);
         petBirthDateTextView = findViewById(R.id.petBirthDateTextView);
         vaccineRecyclerView = findViewById(R.id.vaccineRecyclerView);
         addVaccineFab = findViewById(R.id.addVaccineFab);
         emptyView = findViewById(R.id.emptyView);
         dateFormat = android.text.format.DateFormat.getDateFormat(this);
+
+        // Show empty view by default and hide recycler view
+        vaccineRecyclerView.setVisibility(View.GONE);
+        emptyView.setVisibility(View.VISIBLE);
+        emptyView.setAlpha(1f);
+        addVaccineFab.hide();
+
+        // Set up empty state add button
+        findViewById(R.id.emptyStateAddVaccineButton).setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddVaccineActivity.class);
+            intent.putExtra("pet_id", pet.getId());
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+                v,
+                "shared_element_container"
+            );
+            startActivity(intent, options.toBundle());
+        });
 
         // Set up FAB behavior
         vaccineRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -113,7 +123,7 @@ public class PetDetailActivity extends AppCompatActivity implements VaccineAdapt
         });
     }
 
-    private void setupToolbar() {
+    private void setupActionBar() {
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -158,7 +168,7 @@ public class PetDetailActivity extends AppCompatActivity implements VaccineAdapt
         vaccineRecyclerView.setAdapter(vaccineAdapter);
     }
 
-    private void setupAddVaccineButton() {
+    private void setupFab() {
         addVaccineFab.setOnClickListener(v -> {
             Intent intent = new Intent(PetDetailActivity.this, AddVaccineActivity.class);
             intent.putExtra("pet_id", pet.getId());
@@ -171,69 +181,91 @@ public class PetDetailActivity extends AppCompatActivity implements VaccineAdapt
         });
     }
 
-    private void loadPetDetails() {
-        // Load pet image
-        if (pet.getImageUri() != null) {
-            ImageUtils.loadImage(this, pet.getImageUri(), petImageView);
-        }
-
-        // Set pet details
-        petTypeTextView.setText(pet.getType());
-        petBreedTextView.setText(pet.getBreed());
-        petBirthDateTextView.setText(dateFormat.format(pet.getBirthDate()));
-
-        // Load vaccines
-        viewModel.loadVaccines(pet.getId());
+    private void setupBackPressedCallback() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                supportFinishAfterTransition();
+            }
+        });
     }
 
     private void observeViewModel() {
-        viewModel.loadVaccines(pet.getId());
-        viewModel.getVaccines().observe(this, this::updateVaccineList);
-        viewModel.getIsLoading().observe(this, this::updateLoadingState);
-        viewModel.getError().observe(this, this::showError);
-        viewModel.getCurrentPet().observe(this, this::updatePetDetails);
+        // Observe StateFlow values using DefaultLifecycleObserver
+        getLifecycle().addObserver(new DefaultLifecycleObserver() {
+            @Override
+            public void onStart(LifecycleOwner owner) {
+                // Observe vaccines using LiveData
+                viewModel.getVaccinesLiveData().observe(PetDetailActivity.this, PetDetailActivity.this::updateVaccineList);
+                
+                // Observe loading state using LiveData
+                viewModel.getIsLoadingLiveData().observe(PetDetailActivity.this, PetDetailActivity.this::updateLoadingState);
+                
+                // Observe error state using LiveData
+                viewModel.getErrorLiveData().observe(PetDetailActivity.this, PetDetailActivity.this::showError);
+                
+                // Observe current pet using LiveData
+                viewModel.getCurrentPetLiveData().observe(PetDetailActivity.this, pet -> {
+                    if (pet != null) {
+                        updatePetDetails(pet);
+                    }
+                });
+            }
+        });
     }
 
     private void updateVaccineList(List<Vaccine> vaccines) {
+        if (vaccines == null) return;
+        
         vaccineAdapter.updateVaccines(vaccines);
         updateEmptyView(vaccines.isEmpty());
-
-        // Show FAB with animation if list is not empty
-        if (!vaccines.isEmpty()) {
-            addVaccineFab.extend();
-        }
     }
 
-    private void updateLoadingState(boolean isLoading) {
-        if (isLoading) {
-            addVaccineFab.hide();
+    private void updateLoadingState(Boolean isLoading) {
+        // Update loading state UI
+        if (isLoading != null && isLoading) {
+            // Show loading indicator
         } else {
-            addVaccineFab.show();
+            // Hide loading indicator
         }
     }
 
     private void showError(String error) {
-        if (error != null) {
-            Snackbar.make(vaccineRecyclerView, error, Snackbar.LENGTH_LONG)
-                .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
-                .setAction("Retry", v -> viewModel.loadVaccines(pet.getId()))
-                .show();
+        if (error != null && !error.isEmpty()) {
+            Snackbar.make(vaccineRecyclerView, error, Snackbar.LENGTH_LONG).show();
         }
     }
 
     private void updateEmptyView(boolean isEmpty) {
         if (isEmpty) {
-            AnimationUtils.crossFadeViews(emptyView, vaccineRecyclerView);
-            addVaccineFab.extend();
+            // Show empty view with animation
+            emptyView.setVisibility(View.VISIBLE);
+            emptyView.setAlpha(1f);
+            vaccineRecyclerView.setVisibility(View.GONE);
+            addVaccineFab.hide();
         } else {
-            AnimationUtils.crossFadeViews(vaccineRecyclerView, emptyView);
+            // Show recycler view with animation
+            vaccineRecyclerView.setAlpha(0f);
+            vaccineRecyclerView.setVisibility(View.VISIBLE);
+            vaccineRecyclerView.animate()
+                .alpha(1f)
+                .setDuration(300)
+                .start();
+            emptyView.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction(() -> emptyView.setVisibility(View.GONE))
+                .start();
+            addVaccineFab.show();
+            addVaccineFab.extend();
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Refresh pet data from database
+        // Force a refresh of the vaccines
+        viewModel.loadVaccines(pet.getId());
         viewModel.loadPetById(pet.getId());
     }
 
@@ -259,7 +291,45 @@ public class PetDetailActivity extends AppCompatActivity implements VaccineAdapt
     private void updatePetDetails(Pet updatedPet) {
         if (updatedPet != null) {
             pet = updatedPet;
-            loadPetDetails();
+            // Update UI elements
+            if (pet.getImageUri() != null && !pet.getImageUri().isEmpty()) {
+                try {
+                    ImageUtils.loadImage(this, android.net.Uri.parse(pet.getImageUri()), petImageView);
+                    Timber.d("Loading image URI in detail: %s", pet.getImageUri());
+                } catch (Exception e) {
+                    Timber.e(e, "Error loading pet image in detail view");
+                    petImageView.setImageResource(R.drawable.ic_pet_placeholder);
+                }
+            } else {
+                petImageView.setImageResource(R.drawable.ic_pet_placeholder);
+            }
+            petNameTextView.setText(pet.getName());
+            petTypeChip.setText(pet.getType());
+            petBreedChip.setText(pet.getBreed());
+            
+            // Update birth date and age
+            if (pet.getBirthDate() != null) {
+                petBirthDateTextView.setText(getString(R.string.born_on_date, dateFormat.format(pet.getBirthDate())));
+                
+                // Update age chip
+                com.google.android.material.chip.Chip petAgeChip = findViewById(R.id.petAgeChip);
+                if (petAgeChip != null) {
+                    long ageInMillis = System.currentTimeMillis() - pet.getBirthDate().getTime();
+                    int ageInYears = (int) (ageInMillis / (1000L * 60 * 60 * 24 * 365));
+                    int ageInMonths = (int) (ageInMillis / (1000L * 60 * 60 * 24 * 30)) % 12;
+
+                    String ageText;
+                    if (ageInYears > 0) {
+                        ageText = getResources().getQuantityString(R.plurals.years_old, ageInYears, ageInYears);
+                        if (ageInMonths > 0) {
+                            ageText += " " + getResources().getQuantityString(R.plurals.months_old, ageInMonths, ageInMonths);
+                        }
+                    } else {
+                        ageText = getResources().getQuantityString(R.plurals.months_old, ageInMonths, ageInMonths);
+                    }
+                    petAgeChip.setText(ageText);
+                }
+            }
         }
     }
 } 

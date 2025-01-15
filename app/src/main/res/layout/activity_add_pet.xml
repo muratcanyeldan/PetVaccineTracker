@@ -3,22 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="@color/background">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        style="@style/Widget.App.AppBarLayout">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:titleTextColor="@android:color/white"
-            app:navigationIconTint="@android:color/white"
-            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
+            style="@style/Widget.App.Toolbar"
+            app:navigationIcon="@drawable/ic_close"
+            app:title="@string/title_add_pet" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -26,108 +22,159 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:padding="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:layout_margin="16dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutline">
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/petImageView"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_marginBottom="24dp"
-                android:background="?attr/colorSurfaceVariant"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_pet_placeholder"
-                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/nameLayout"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="@string/hint_pet_name"
-                app:errorEnabled="true"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="24dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/nameInput"
+                <FrameLayout
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:layout_marginBottom="24dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/petImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/md_theme_light_surfaceVariant"
+                        android:scaleType="centerInside"
+                        android:padding="32dp"
+                        android:src="@drawable/ic_pet_placeholder"
+                        app:tint="?attr/colorOutline"
+                        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraLarge" />
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/changeImageButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_margin="8dp"
+                        android:contentDescription="@string/select_image"
+                        app:fabSize="mini"
+                        app:srcCompat="@drawable/ic_camera"
+                        style="@style/Widget.Material3.FloatingActionButton.Small.Primary" />
+
+                </FrameLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/nameLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textCapWords"
-                    android:maxLength="30" />
+                    android:layout_marginBottom="16dp"
+                    android:hint="@string/hint_pet_name"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_pet"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/nameInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapWords"
+                        android:maxLength="30" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/typeLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="@string/hint_pet_type"
-                app:errorEnabled="true"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <AutoCompleteTextView
-                    android:id="@+id/typeInput"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/typeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none" />
+                    android:layout_marginBottom="16dp"
+                    android:hint="@string/select_pet_type"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_pets"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <AutoCompleteTextView
+                        android:id="@+id/typeInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/breedLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="@string/hint_pet_breed"
-                app:errorEnabled="true"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/breedInput"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/breedLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textCapWords"
-                    android:maxLength="30" />
+                    android:layout_marginBottom="16dp"
+                    android:hint="@string/hint_pet_breed"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_pets"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/breedInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapWords"
+                        android:maxLength="30" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/birthDateLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:hint="@string/hint_birth_date"
-                app:errorEnabled="true"
-                app:endIconDrawable="@drawable/ic_calendar"
-                app:endIconMode="custom"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/birthDateInput"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/birthDateLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:inputType="none" />
+                    android:layout_marginBottom="32dp"
+                    android:hint="@string/hint_birth_date"
+                    app:errorEnabled="true"
+                    app:startIconDrawable="@drawable/ic_calendar"
+                    app:endIconDrawable="@drawable/ic_calendar"
+                    app:endIconMode="custom"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/birthDateInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="none" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/addButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/button_add"
-                android:textAllCaps="false"
-                app:icon="@drawable/ic_add"
-                style="@style/Widget.Material3.Button" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/cancelButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/cancel"
+                        style="@style/Widget.Material3.Button.OutlinedButton" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/addButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/button_add"
+                        app:icon="@drawable/ic_add"
+                        style="@style/Widget.Material3.Button.TonalButton" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.core.widget.NestedScrollView>
 

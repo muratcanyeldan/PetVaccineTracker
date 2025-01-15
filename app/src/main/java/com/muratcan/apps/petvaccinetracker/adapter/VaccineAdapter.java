@@ -55,8 +55,13 @@ public class VaccineAdapter extends RecyclerView.Adapter<VaccineAdapter.VaccineV
 
     public void updateVaccines(List<Vaccine> newVaccines) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new VaccineDiffCallback(vaccines, newVaccines));
-        vaccines = new ArrayList<>(newVaccines);
+        vaccines.clear();
+        vaccines.addAll(newVaccines);
         diffResult.dispatchUpdatesTo(this);
+    }
+
+    public List<Vaccine> getVaccines() {
+        return vaccines;
     }
 
     private static class VaccineDiffCallback extends DiffUtil.Callback {
@@ -137,6 +142,13 @@ public class VaccineAdapter extends RecyclerView.Adapter<VaccineAdapter.VaccineV
                     dateFormat.format(vaccine.getNextDueDate())
                 ));
                 nextDueDateTextView.setVisibility(View.VISIBLE);
+                
+                long daysUntilDue = (vaccine.getNextDueDate().getTime() - System.currentTimeMillis()) / (1000 * 60 * 60 * 24);
+                if (daysUntilDue <= 7 && daysUntilDue >= 0) {
+                    nextDueDateTextView.setTextColor(itemView.getContext().getColor(android.R.color.holo_red_dark));
+                } else {
+                    nextDueDateTextView.setTextColor(itemView.getContext().getResources().getColor(com.google.android.material.R.color.material_on_surface_emphasis_medium, itemView.getContext().getTheme()));
+                }
             } else {
                 nextDueDateTextView.setVisibility(View.GONE);
             }

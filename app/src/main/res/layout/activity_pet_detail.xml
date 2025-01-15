@@ -2,87 +2,57 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="@color/background">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:liftOnScroll="true"
-        android:fitsSystemWindows="true">
+        style="@style/Widget.App.AppBarLayout">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:fitsSystemWindows="true"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+            style="@style/Widget.App.Toolbar">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/backButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="?attr/actionBarItemBackground"
-                    android:contentDescription="@string/action_cancel"
+                    style="@style/Widget.App.Toolbar.Button"
+                    android:contentDescription="@string/action_back"
                     android:src="@drawable/ic_arrow_back"
-                    app:tint="@android:color/white"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintVertical_bias="0.5" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/toolbarTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:textAppearance="?attr/textAppearanceHeadline6"
-                    android:textColor="@android:color/white"
-                    app:layout_constraintStart_toEndOf="@id/backButton"
-                    app:layout_constraintEnd_toStartOf="@id/editButton"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintVertical_bias="0.5" />
+                    android:layout_weight="1"
+                    android:text="@string/pet_details"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
                 <ImageButton
                     android:id="@+id/editButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="?attr/actionBarItemBackground"
+                    style="@style/Widget.App.Toolbar.Button"
                     android:contentDescription="@string/action_edit"
-                    android:src="@drawable/ic_edit"
-                    app:tint="@android:color/white"
-                    app:layout_constraintEnd_toStartOf="@id/deleteButton"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintVertical_bias="0.5" />
+                    android:src="@drawable/ic_edit" />
 
                 <ImageButton
                     android:id="@+id/deleteButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="?attr/actionBarItemBackground"
+                    style="@style/Widget.App.Toolbar.Button"
                     android:contentDescription="@string/action_delete"
-                    android:src="@drawable/ic_delete"
-                    app:tint="@android:color/white"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintVertical_bias="0.5" />
+                    android:src="@drawable/ic_delete" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
         </com.google.android.material.appbar.MaterialToolbar>
-
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -97,35 +67,35 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <FrameLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimaryContainer"
-                android:padding="24dp">
+                android:layout_margin="16dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutline">
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/petImageView"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:layout_gravity="center"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full" />
-
-            </FrameLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <com.google.android.material.card.MaterialCardView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorOutline">
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/colorPrimaryContainer"
+                        android:padding="24dp">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/petImageView"
+                            android:layout_width="160dp"
+                            android:layout_height="160dp"
+                            android:layout_gravity="center"
+                            android:scaleType="centerCrop"
+                            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraLarge" />
+
+                    </FrameLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -134,90 +104,147 @@
                         android:padding="16dp">
 
                         <TextView
-                            android:id="@+id/petTypeTextView"
+                            android:id="@+id/petNameTextView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:drawableStart="@drawable/ic_pet"
-                            android:drawablePadding="8dp"
-                            android:textAppearance="?attr/textAppearanceBody1" />
+                            android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                            android:textAlignment="center"
+                            tools:text="Max" />
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="8dp">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/petTypeChip"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:chipIcon="@drawable/ic_pet"
+                                style="@style/Widget.Material3.Chip.Assist"
+                                tools:text="Dog" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/petBreedChip"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:chipIcon="@drawable/ic_pets"
+                                style="@style/Widget.Material3.Chip.Assist"
+                                tools:text="Golden Retriever" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/petAgeChip"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:chipIcon="@drawable/ic_calendar"
+                                style="@style/Widget.Material3.Chip.Assist"
+                                tools:text="2 years old" />
+
+                        </com.google.android.material.chip.ChipGroup>
 
                         <TextView
-                            android:id="@+id/petBreedTextView"
-                            android:layout_width="match_parent"
+                            android:id="@+id/petTypeTextView"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:drawableStart="@drawable/ic_pets"
-                            android:drawablePadding="8dp"
-                            android:textAppearance="?attr/textAppearanceBody1" />
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                            tools:text="Dog" />
 
                         <TextView
                             android:id="@+id/petBirthDateTextView"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:drawableStart="@drawable/ic_calendar"
-                            android:drawablePadding="8dp"
-                            android:textAppearance="?attr/textAppearanceBody1" />
+                            android:layout_marginTop="4dp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            android:textColor="?android:textColorSecondary"
+                            tools:text="Born on January 1, 2020" />
 
                     </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutline">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/vaccines"
-                    android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                <FrameLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/vaccineRecyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clipToPadding="false" />
-
-                    <LinearLayout
-                        android:id="@+id/emptyView"
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:visibility="gone">
+                        android:text="@string/vaccines"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
-                        <ImageView
-                            android:layout_width="120dp"
-                            android:layout_height="120dp"
-                            android:alpha="0.5"
-                            android:src="@drawable/ic_vaccine" />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/vaccineRecyclerView"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/no_vaccines"
-                            android:textAppearance="?attr/textAppearanceHeadline6" />
+                            android:clipToPadding="false" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:id="@+id/emptyView"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="@string/add_first_vaccine"
-                            android:textAppearance="?attr/textAppearanceBody2"
-                            android:textColor="?android:textColorSecondary" />
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="32dp"
+                            android:visibility="gone">
 
-                    </LinearLayout>
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="200dp"
+                                android:layout_height="200dp"
+                                app:lottie_autoPlay="true"
+                                app:lottie_loop="true"
+                                app:lottie_rawRes="@raw/vaccine_animation" />
 
-                </FrameLayout>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/no_vaccines"
+                                android:textAlignment="center"
+                                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall" />
 
-            </LinearLayout>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/add_first_vaccine"
+                                android:textAlignment="center"
+                                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                android:textColor="?android:textColorSecondary" />
 
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/emptyStateAddVaccineButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/add_vaccine"
+                                app:icon="@drawable/ic_add"
+                                style="@style/Widget.Material3.Button.TonalButton" />
+
+                        </LinearLayout>
+                    </FrameLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -227,6 +254,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:text="@string/add_vaccine"
-        app:icon="@drawable/ic_add" />
+        app:icon="@drawable/ic_add"
+        style="@style/Widget.Material3.ExtendedFloatingActionButton.Primary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout> 

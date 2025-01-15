@@ -9,11 +9,14 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
+        style="@style/Widget.App.Toolbar"
         android:background="@color/preview_toolbar_background"
-        app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_close"
-        app:navigationIconTint="@color/md_theme_light_onPrimary"/>
+        app:navigationIconTint="@color/md_theme_light_onPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.muratcan.apps.petvaccinetracker.view.ZoomableImageView
         android:id="@+id/imageView"

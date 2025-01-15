@@ -10,13 +10,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.muratcan.apps.petvaccinetracker.database.AppDatabase;
+import com.muratcan.apps.petvaccinetracker.model.Pet;
 import com.muratcan.apps.petvaccinetracker.model.Vaccine;
+import com.muratcan.apps.petvaccinetracker.util.NotificationHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -91,6 +93,15 @@ public class AddVaccineActivity extends AppCompatActivity {
                 recurringOptionsContainer.setVisibility(View.GONE);
             }
         });
+        
+        // Set up save button with correct text and icon
+        if (vaccine != null) {
+            saveButton.setText(R.string.edit_vaccine);
+            saveButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_save, 0, 0, 0);
+        } else {
+            saveButton.setText(R.string.save_vaccine);
+            saveButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_add, 0, 0, 0);
+        }
         
         // Load vaccine details if editing
         if (vaccine != null) {
@@ -209,11 +220,12 @@ public class AddVaccineActivity extends AppCompatActivity {
             
             final Vaccine existingVaccine = getIntent().getParcelableExtra("vaccine");
             final Vaccine vaccineToSave = existingVaccine != null ? existingVaccine : new Vaccine();
+            final Date finalNextDue = nextDue;  // Create final copy
             
             vaccineToSave.setName(name);
             vaccineToSave.setNotes(notes);
             vaccineToSave.setDateAdministered(administered);
-            vaccineToSave.setNextDueDate(nextDue);
+            vaccineToSave.setNextDueDate(finalNextDue);
             vaccineToSave.setPetId(petId);
             
             new Thread(() -> {
@@ -225,6 +237,21 @@ public class AddVaccineActivity extends AppCompatActivity {
                     } else {
                         // Update existing vaccine
                         database.vaccineDao().update(vaccineToSave);
+                    }
+                    
+                    // Schedule notification if there's a next due date
+                    if (finalNextDue != null) {
+                        // Get pet name for notification
+                        Pet pet = database.petDao().getPetById(petId);
+                        if (pet != null) {
+                            SimpleDateFormat notifDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                            NotificationHelper.scheduleNotification(
+                                this,
+                                pet.getName(),
+                                name,
+                                notifDateFormat.format(finalNextDue)
+                            );
+                        }
                     }
                     
                     final boolean isNewVaccine = vaccineToSave.getId() == 0;

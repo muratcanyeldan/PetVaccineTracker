@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Delete vaccine"
+            android:contentDescription="@string/delete_vaccine_description"
             android:padding="8dp"
             android:src="@android:drawable/ic_menu_delete" />
 

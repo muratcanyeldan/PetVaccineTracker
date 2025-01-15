@@ -31,8 +31,10 @@ public class Vaccine implements Parcelable {
     protected Vaccine(Parcel in) {
         id = in.readLong();
         name = in.readString();
-        dateAdministered = new Date(in.readLong());
-        nextDueDate = new Date(in.readLong());
+        long dateAdministeredMillis = in.readLong();
+        dateAdministered = dateAdministeredMillis != 0 ? new Date(dateAdministeredMillis) : null;
+        long nextDueMillis = in.readLong();
+        nextDueDate = nextDueMillis != 0 ? new Date(nextDueMillis) : null;
         notes = in.readString();
         petId = in.readLong();
     }
