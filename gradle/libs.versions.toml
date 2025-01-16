@@ -5,13 +5,10 @@ compiler = "4.16.0"
 constraintlayout = "2.2.0"
 desugar_jdk_libs = "2.1.4"
 firebaseBom = "33.7.0"
-firebaseBomVersion = "32.7.4"
 glide = "4.16.0"
 gradle = "8.8.0"
 guava = "33.4.0-android"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
 appcompat = "1.7.0"
 lottie = "6.1.0"
 material = "1.12.0"
@@ -23,12 +20,18 @@ timber = "5.0.1"
 ucrop = "2.2.8"
 workRuntime = "2.10.0"
 swiperefreshlayout = "1.1.0"
-compose-bom = "2024.02.00"
-activity-compose = "1.8.2"
-lifecycle-runtime-compose = "2.7.0"
-navigation-compose = "2.7.7"
+compose-bom = "2024.12.01"
+activity-compose = "1.9.3"
+lifecycle-runtime-compose = "2.8.7"
+navigation-compose = "2.8.5"
 landscapist = "2.3.1"
-kotlin = "1.9.22"
+gms = "4.4.2"
+firebase-crashlytics = "3.0.2"
+ksp = "2.1.0-1.0.29"
+firebase-analytics = "33.7.0"
+firebase-auth = "33.7.0"
+firebase-crashlytics-ktx = "33.7.0"
+kotlin = "2.1.0"
 
 [libraries]
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
@@ -43,7 +46,6 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-runtime-compose" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom-v3274 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebase-crashlytics-ktx = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 landscapist-glide = { group = "com.github.skydoves", name = "landscapist-glide", version.ref = "landscapist" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
@@ -52,14 +54,8 @@ com-google-firebase-firebase-auth = { module = "com.google.firebase:firebase-aut
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
-firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
-firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
-firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
-google-firebase-auth = { module = "com.google.firebase:firebase-auth" }
-google-firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
-google-firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -76,8 +72,13 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 ucrop = { module = "com.github.yalantis:ucrop", version.ref = "ucrop" }
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
 swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+gms = { id = "com.google.gms.google-services", version.ref = "gms" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
