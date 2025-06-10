@@ -7,12 +7,13 @@ import android.content.Intent;
 import android.os.Build;
 import android.provider.Settings;
 
+import com.muratcan.apps.petvaccinetracker.widget.WidgetUpdateService;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-@SuppressWarnings("unused")
 public class NotificationHelper {
     private static final String TAG = "NotificationHelper";
 
@@ -32,7 +33,11 @@ public class NotificationHelper {
         return null;
     }
 
-    public static void scheduleNotification(Context context, String petName, String vaccineName, String dueDate) {
+    public static void scheduleNotification(Context context, String petName, String vaccineName, String dueDate, long petId, long vaccineId) {
+        // Get user's preferred reminder days from settings
+        NotificationSettingsHelper settingsHelper = new NotificationSettingsHelper(context);
+        int[] reminderDays = settingsHelper.getReminderDays(); // USER'S CUSTOM SETTINGS!
+
         try {
             if (needsExactAlarmPermission(context)) {
                 Logger.error(TAG, "Cannot schedule exact alarms - permission not granted");
@@ -46,38 +51,60 @@ public class NotificationHelper {
                 return;
             }
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            calendar.set(Calendar.HOUR_OF_DAY, 9); // Set notification time to 9 AM
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-
-            Intent intent = new Intent(context, VaccineNotificationReceiver.class);
-            intent.putExtra("petName", petName);
-            intent.putExtra("vaccineName", vaccineName);
-
-            // Create a unique ID for each notification based on pet name and vaccine name
-            int notificationId = (petName + vaccineName).hashCode();
-            intent.putExtra("notificationId", notificationId);
-
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context,
-                notificationId,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-            );
+            Calendar dueDateCalendar = Calendar.getInstance();
+            dueDateCalendar.setTime(date);
+            dueDateCalendar.set(Calendar.HOUR_OF_DAY, settingsHelper.getNotificationHour()); // USER'S PREFERRED TIME
+            dueDateCalendar.set(Calendar.MINUTE, settingsHelper.getNotificationMinute());     // USER'S PREFERRED TIME
+            dueDateCalendar.set(Calendar.SECOND, 0);
 
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            if (alarmManager != null) {
+            if (alarmManager == null) {
+                Logger.error(TAG, "AlarmManager is null");
+                return;
+            }
+
+            // Schedule notification for each reminder day
+            for (int reminderDay : reminderDays) {
+                Calendar notificationCalendar = (Calendar) dueDateCalendar.clone();
+                notificationCalendar.add(Calendar.DAY_OF_MONTH, -reminderDay); // Subtract days from due date
+
+                // Skip if notification time is in the past
+                if (notificationCalendar.getTimeInMillis() <= System.currentTimeMillis()) {
+                    Logger.info(TAG, String.format("Skipping past notification for %d days before due date", reminderDay));
+                    continue;
+                }
+
+                Intent intent = new Intent(context, VaccineNotificationReceiver.class);
+                intent.putExtra("petName", petName);
+                intent.putExtra("vaccineName", vaccineName);
+                intent.putExtra("petId", petId);
+                intent.putExtra("vaccineId", vaccineId);
+                intent.putExtra("daysRemaining", reminderDay); // ADD THIS: tells receiver how many days remaining
+
+                // Create unique ID for each notification (vaccine + reminder day)
+                int notificationId = (int) (vaccineId * 1000 + reminderDay); // Unique ID per vaccine per reminder
+                intent.putExtra("notificationId", notificationId);
+
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                        context,
+                        notificationId,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                );
+
                 try {
                     alarmManager.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP,
-                        calendar.getTimeInMillis(),
-                        pendingIntent
+                            AlarmManager.RTC_WAKEUP,
+                            notificationCalendar.getTimeInMillis(),
+                            pendingIntent
                     );
+
+                    String reminderText = reminderDay == 0 ? "due today" : reminderDay + " days before due date";
                     Logger.info(TAG, String.format(Locale.getDefault(),
-                        "Scheduled notification for pet: %s, vaccine: %s, due: %s",
-                        petName, vaccineName, dueDate));
+                            "Scheduled notification for pet: %s, vaccine: %s, %s at %s",
+                            petName, vaccineName, reminderText,
+                            new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(notificationCalendar.getTime())));
+
                 } catch (SecurityException e) {
                     Logger.error(TAG, "SecurityException when scheduling exact alarm - permission might have been revoked", e);
                 }
@@ -85,6 +112,9 @@ public class NotificationHelper {
         } catch (Exception e) {
             Logger.error(TAG, "Failed to schedule notification", e);
         }
+
+        // Update widgets after scheduling
+        updateWidgets(context);
     }
 
     public static void cancelNotificationsForPet(Context context, String petName) {
@@ -120,5 +150,10 @@ public class NotificationHelper {
             Logger.error(TAG, String.format(Locale.getDefault(),
                 "Failed to cancel notifications for pet: %s", petName), e);
         }
+    }
+
+    public static void updateWidgets(Context context) {
+        Intent updateIntent = WidgetUpdateService.createUpdateIntent(context);
+        context.startService(updateIntent);
     }
 } 

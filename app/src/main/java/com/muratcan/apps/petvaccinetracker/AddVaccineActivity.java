@@ -200,34 +200,41 @@ public class AddVaccineActivity extends AppCompatActivity {
         try {
             Date administered = dateAdministered.isEmpty() ? null : dateFormat.parse(dateAdministered);
             Date nextDue = null;
-            
+            boolean isRecurring = false;
+            int recurrenceMonths = 0;
+
             if (administered != null && vaccineType.equals(getString(R.string.recurring))) {
                 String recurringPeriod = recurringPeriodInput.getText().toString();
                 if (recurringPeriod.isEmpty()) {
                     recurringPeriodInput.setError(getString(R.string.recurring_period_required));
                     return;
                 }
-                
+
                 // Parse the number of months from the recurring period (e.g., "3 months" -> 3)
-                int months = Integer.parseInt(recurringPeriod.split(" ")[0]);
-                
+                recurrenceMonths = Integer.parseInt(recurringPeriod.split(" ")[0]);
+                isRecurring = true;
+
                 // Calculate next due date
                 Calendar nextDueCalendar = Calendar.getInstance();
                 nextDueCalendar.setTime(administered);
-                nextDueCalendar.add(Calendar.MONTH, months);
+                nextDueCalendar.add(Calendar.MONTH, recurrenceMonths);
                 nextDue = nextDueCalendar.getTime();
             }
             
             final Vaccine existingVaccine = getIntent().getParcelableExtra("vaccine");
             final Vaccine vaccineToSave = existingVaccine != null ? existingVaccine : new Vaccine();
-            final Date finalNextDue = nextDue;  // Create final copy
+            final Date finalNextDue = nextDue;
+            final boolean finalIsRecurring = isRecurring;
+            final int finalRecurrenceMonths = recurrenceMonths;
             
             vaccineToSave.setName(name);
             vaccineToSave.setNotes(notes);
             vaccineToSave.setDateAdministered(administered);
             vaccineToSave.setNextDueDate(finalNextDue);
             vaccineToSave.setPetId(petId);
-            
+            vaccineToSave.setRecurring(finalIsRecurring);
+            vaccineToSave.setRecurrenceMonths(finalRecurrenceMonths);
+
             new Thread(() -> {
                 try {
                     if (vaccineToSave.getId() == 0) {
@@ -246,10 +253,12 @@ public class AddVaccineActivity extends AppCompatActivity {
                         if (pet != null) {
                             SimpleDateFormat notifDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                             NotificationHelper.scheduleNotification(
-                                this,
-                                pet.getName(),
-                                name,
-                                notifDateFormat.format(finalNextDue)
+                                    this,
+                                    pet.getName(),
+                                    name,
+                                    notifDateFormat.format(finalNextDue),
+                                    petId,
+                                    vaccineToSave.getId()
                             );
                         }
                     }

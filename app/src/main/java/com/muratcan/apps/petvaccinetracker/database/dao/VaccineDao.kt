@@ -6,36 +6,22 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.muratcan.apps.petvaccinetracker.model.Vaccine
+import com.muratcan.apps.petvaccinetracker.model.VaccineWithPetName
 import kotlinx.coroutines.flow.Flow
-
-@Dao
-interface KtVaccineDao {
-    @Query("SELECT * FROM vaccines WHERE petId = :petId")
-    fun getVaccinesForPetFlow(petId: Long): Flow<List<Vaccine>>
-    
-    @Insert
-    suspend fun insert(vaccine: Vaccine): Long
-    
-    @Insert
-    suspend fun insertAll(vaccines: List<Vaccine>)
-    
-    @Update
-    suspend fun update(vaccine: Vaccine)
-    
-    @Delete
-    suspend fun delete(vaccine: Vaccine)
-    
-    @Query("DELETE FROM vaccines WHERE petId = :petId")
-    suspend fun deleteAllForPet(petId: Long)
-}
 
 @Dao
 interface VaccineDao {
     @Query("SELECT * FROM vaccines WHERE petId = :petId")
     fun getVaccinesForPet(petId: Long): androidx.lifecycle.LiveData<List<Vaccine>>
+
+    @Query("SELECT * FROM vaccines WHERE petId = :petId")
+    fun getVaccinesForPetFlow(petId: Long): Flow<List<Vaccine>>
     
     @Query("SELECT * FROM vaccines WHERE petId = :petId")
     fun getVaccinesForPetSync(petId: Long): List<Vaccine>
+
+    @Query("SELECT * FROM vaccines WHERE id = :vaccineId")
+    fun getVaccineById(vaccineId: Long): Vaccine?
     
     @Insert
     fun insert(vaccine: Vaccine): Long
@@ -51,4 +37,22 @@ interface VaccineDao {
     
     @Query("DELETE FROM vaccines WHERE petId = :petId")
     fun deleteAllForPet(petId: Long)
+
+    @Query("""
+        SELECT v.*, p.name as petName 
+        FROM vaccines v 
+        INNER JOIN pets p ON v.petId = p.id 
+        WHERE v.dateAdministered IS NOT NULL 
+        ORDER BY v.dateAdministered DESC
+    """)
+    fun getVaccineHistoryRaw(): Flow<List<VaccineWithPetName>>
+
+    @Query("""
+        SELECT v.*, p.name as petName 
+        FROM vaccines v 
+        INNER JOIN pets p ON v.petId = p.id 
+        WHERE v.dateAdministered IS NOT NULL AND v.petId = :petId
+        ORDER BY v.dateAdministered DESC
+    """)
+    fun getVaccineHistoryForPetRaw(petId: Long): Flow<List<VaccineWithPetName>>
 } 

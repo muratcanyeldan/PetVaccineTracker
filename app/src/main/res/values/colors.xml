@@ -79,4 +79,8 @@
     <!-- Preview Dialog Colors -->
     <color name="preview_background">#CC000000</color>
     <color name="preview_toolbar_background">#66000000</color>
+
+    <color name="background_color">#F5F5F5</color>
+    <color name="text_secondary">#757575</color>
+    <color name="primary_color">#2196F3</color>
 </resources>

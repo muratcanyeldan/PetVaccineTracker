@@ -70,6 +70,30 @@
             android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
             android:theme="@style/Theme.App" />
 
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:screenOrientation="fullSensor"
+            android:configChanges="orientation|screenSize|keyboardHidden|uiMode" />
+
+        <!-- Widget Provider -->
+        <receiver
+            android:name=".widget.VaccineWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.muratcan.apps.petvaccinetracker.WIDGET_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/vaccine_widget_info" />
+        </receiver>
+
+        <!-- Widget Update Service -->
+        <service
+            android:name=".widget.WidgetUpdateService"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -82,6 +106,11 @@
 
         <receiver
             android:name=".util.VaccineNotificationReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
+            android:name=".util.VaccineActionReceiver"
             android:enabled="true"
             android:exported="false" />
 

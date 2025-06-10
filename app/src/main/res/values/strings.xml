@@ -164,4 +164,31 @@
     <string name="error_loading_image">Error loading the image</string>
     <string name="error_saving_image">Error saving the image</string>
     <string name="error_no_camera">No camera app available</string>
+
+    <!-- Notification Titles -->
+    <string name="vaccine_due_today_title">Vaccine Due Today!</string>
+    <string name="vaccine_due_tomorrow_title">Vaccine Due Tomorrow</string>
+    <string name="vaccine_due_soon_title">Vaccine Reminder</string>
+
+    <!-- Notification Messages -->
+    <string name="vaccine_due_today_text">%1$s\'s %2$s vaccine is due today</string>
+    <string name="vaccine_due_tomorrow_text">%1$s\'s %2$s vaccine is due tomorrow</string>
+    <string name="vaccine_due_in_days_text">%1$s\'s %2$s vaccine is due in %3$d days</string>
+
+    <!-- Action Button Labels -->
+    <string name="mark_done">Mark Done</string>
+    <string name="postpone">Postpone</string>
+
+    <!-- Action Feedback Messages -->
+    <string name="vaccine_marked_done">%s vaccine marked as completed</string>
+    <string name="vaccine_marked_done_recurring">%s vaccine completed. Next dose scheduled.</string>
+    <string name="vaccine_postponed">%s vaccine postponed by 7 days</string>
+    <string name="error_marking_vaccine_done">Error marking vaccine as done</string>
+    <string name="error_postponing_vaccine">Error postponing vaccine</string>
+
+    <!-- Widget Strings -->
+    <string name="widget_description">Shows upcoming vaccine due dates for your pets</string>
+    <string name="widget_loading">Loading vaccine information...</string>
+    <string name="widget_no_data">No vaccine data available</string>
+    <string name="widget_error">Error loading data</string>
 </resources>

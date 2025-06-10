@@ -23,9 +23,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.muratcan.apps.petvaccinetracker.model.Pet;
-import com.muratcan.apps.petvaccinetracker.model.Vaccine;
 import com.muratcan.apps.petvaccinetracker.util.ImageUtils;
-import com.muratcan.apps.petvaccinetracker.util.RecommendedVaccines;
 import com.muratcan.apps.petvaccinetracker.viewmodel.PetViewModel;
 import com.muratcan.apps.petvaccinetracker.util.FirebaseHelper;
 
@@ -33,7 +31,6 @@ import java.io.File;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import timber.log.Timber;
 import android.Manifest;

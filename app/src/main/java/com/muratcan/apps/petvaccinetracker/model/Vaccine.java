@@ -24,8 +24,12 @@ public class Vaccine implements Parcelable {
     private Date nextDueDate;
     private String notes;
     private long petId;
+    private boolean isRecurring;
+    private int recurrenceMonths;
 
     public Vaccine() {
+        this.isRecurring = false;
+        this.recurrenceMonths = 0;
     }
 
     protected Vaccine(Parcel in) {
@@ -37,6 +41,8 @@ public class Vaccine implements Parcelable {
         nextDueDate = nextDueMillis != 0 ? new Date(nextDueMillis) : null;
         notes = in.readString();
         petId = in.readLong();
+        isRecurring = in.readByte() != 0;
+        recurrenceMonths = in.readInt();
     }
 
     @Override
@@ -47,6 +53,8 @@ public class Vaccine implements Parcelable {
         dest.writeLong(nextDueDate != null ? nextDueDate.getTime() : 0);
         dest.writeString(notes);
         dest.writeLong(petId);
+        dest.writeByte((byte) (isRecurring ? 1 : 0));
+        dest.writeInt(recurrenceMonths);
     }
 
     @Override
@@ -112,5 +120,21 @@ public class Vaccine implements Parcelable {
 
     public void setPetId(long petId) {
         this.petId = petId;
+    }
+
+    public boolean isRecurring() {
+        return isRecurring;
+    }
+
+    public void setRecurring(boolean recurring) {
+        isRecurring = recurring;
+    }
+
+    public int getRecurrenceMonths() {
+        return recurrenceMonths;
+    }
+
+    public void setRecurrenceMonths(int recurrenceMonths) {
+        this.recurrenceMonths = recurrenceMonths;
     }
 }

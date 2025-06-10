@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.muratcan.apps.petvaccinetracker.model.Pet
 import com.muratcan.apps.petvaccinetracker.model.Vaccine
+import com.muratcan.apps.petvaccinetracker.model.VaccineHistoryItem
 import com.muratcan.apps.petvaccinetracker.repository.PetRepository
 import com.muratcan.apps.petvaccinetracker.util.FirebaseHelper
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -264,6 +265,18 @@ class PetViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearError() {
         _error.value = null
+    }
+
+    // For accessing all pets (for the filter spinner)
+    fun getAllPets(): LiveData<List<Pet>> = _petsLiveData
+
+    // For vaccination history
+    fun getVaccineHistory(): LiveData<List<VaccineHistoryItem>> {
+        return repository.getVaccineHistory().asLiveData()
+    }
+
+    fun getVaccineHistoryForPet(petId: Long): LiveData<List<VaccineHistoryItem>> {
+        return repository.getVaccineHistoryForPet(petId).asLiveData()
     }
 
     // Getter methods for Java interop

@@ -163,4 +163,32 @@
     <string name="vaccine_added">Aşı başarıyla eklendi</string>
     <string name="vaccine_updated">Aşı başarıyla güncellendi</string>
     <string name="vaccine_deleted">Aşı silindi</string>
+
+    <!-- Notification Titles -->
+    <string name="vaccine_due_today_title">Aşı Günü Bugün!</string>
+    <string name="vaccine_due_tomorrow_title">Aşı Günü Yarın</string>
+    <string name="vaccine_due_soon_title">Aşı Hatırlatıcısı</string>
+
+    <!-- Notification Messages -->
+    <string name="vaccine_due_today_text">%1$s için %2$s aşısı bugün yapılmalı</string>
+    <string name="vaccine_due_tomorrow_text">%1$s için %2$s aşısı yarın yapılmalı</string>
+    <string name="vaccine_due_in_days_text">%1$s için %2$s aşısı %3$d gün içinde yapılmalı</string>
+
+    <!-- Action Button Labels -->
+    <string name="mark_done">Tamamlandı Olarak İşaretle</string>
+    <string name="postpone">Ertele</string>
+
+    <!-- Action Feedback Messages -->
+    <string name="vaccine_marked_done">%s aşısı tamamlandı olarak işaretlendi</string>
+    <string name="vaccine_marked_done_recurring">%s aşısı tamamlandı. Sonraki doz planlandı.</string>
+    <string name="vaccine_postponed">%s aşısı 7 gün ertelendi</string>
+    <string name="error_marking_vaccine_done">Aşıyı tamamlandı olarak işaretlerken bir hata oluştu</string>
+    <string name="error_postponing_vaccine">Aşıyı erteleme sırasında bir hata oluştu</string>
+
+    <!-- Widget Metinleri -->
+    <string name="widget_description">Evcil hayvanlarınız için yaklaşan aşı tarihlerini gösterir</string>
+    <string name="widget_loading">Aşı bilgileri yükleniyor...</string>
+    <string name="widget_no_data">Aşı verisi mevcut değil</string>
+    <string name="widget_error">Veri yükleme hatası</string>
+
 </resources>

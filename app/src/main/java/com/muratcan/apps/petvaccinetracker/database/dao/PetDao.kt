@@ -54,4 +54,7 @@ interface KtPetDao {
     
     @Query("SELECT * FROM pets ORDER BY birth_date DESC")
     fun getAllPetsSortedByBirthDate(): Flow<List<Pet>>
+
+    @Query("SELECT * FROM pets")
+    fun getAllPetsSync(): List<Pet>
 } 
