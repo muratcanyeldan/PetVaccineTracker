@@ -60,7 +60,6 @@ captures/
 .cxx/
 
 # Google Services (e.g. APIs or Firebase)
-# Comment the next line if you want to check in your Google Services file
 google-services.json
 
 # Freeline

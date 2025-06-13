@@ -7,7 +7,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.muratcan.apps.petvaccinetracker.database.dao.KtPetDao
 import com.muratcan.apps.petvaccinetracker.database.dao.PetDao
 import com.muratcan.apps.petvaccinetracker.database.dao.VaccineDao
 import com.muratcan.apps.petvaccinetracker.model.Pet
@@ -17,7 +16,6 @@ import com.muratcan.apps.petvaccinetracker.model.Vaccine
 @TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun petDao(): PetDao
-    abstract fun ktPetDao(): KtPetDao
     abstract fun vaccineDao(): VaccineDao
 
     companion object {
@@ -26,8 +24,7 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var instance: AppDatabase? = null
 
-        @JvmStatic
-        fun getInstance(context: Context): AppDatabase {
+        fun getDatabase(context: Context): AppDatabase {
             return instance ?: synchronized(this) {
                 instance ?: buildDatabase(context).also { instance = it }
             }

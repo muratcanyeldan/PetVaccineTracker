@@ -10,7 +10,7 @@ data class VaccineWithPetName(
         return VaccineHistoryItem(
             vaccineId = vaccine.id,
             petName = petName,
-            vaccineName = vaccine.name,
+            vaccineName = vaccine.name ?: "",
             dateAdministered = vaccine.dateAdministered,
             notes = vaccine.notes,
             petId = vaccine.petId,

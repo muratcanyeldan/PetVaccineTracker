@@ -59,7 +59,7 @@ class PetViewModel(application: Application) : AndroidViewModel(application) {
                     _isLoading.value = false
                     return@launch
                 }
-                
+
                 repository.getPetsForUser(currentUserId).collect { petsList ->
                     val filteredAndSorted = applyFiltersAndSort(petsList)
                     _pets.value = filteredAndSorted
@@ -78,15 +78,16 @@ class PetViewModel(application: Application) : AndroidViewModel(application) {
         } else {
             pets.filter { pet ->
                 pet.name.contains(_searchQuery.value, ignoreCase = true) ||
-                pet.type.contains(_searchQuery.value, ignoreCase = true) ||
-                pet.breed.contains(_searchQuery.value, ignoreCase = true)
+                        pet.type.contains(_searchQuery.value, ignoreCase = true) ||
+                        pet.breed.contains(_searchQuery.value, ignoreCase = true)
             }
         }
 
         when (_sortOrder.value) {
             "name" -> result = result.sortedBy { it.name.lowercase() }
             "date" -> result = result.sortedByDescending { it.birthDate }
-            else -> { /* no sorting */ }
+            else -> { /* no sorting */
+            }
         }
 
         Timber.d("Sorting by: ${_sortOrder.value}, Results: ${result.size} pets")
@@ -107,7 +108,7 @@ class PetViewModel(application: Application) : AndroidViewModel(application) {
                     _isLoading.value = false
                     return@launch
                 }
-                
+
                 // Get first emission only
                 val petsList = repository.getPetsForUser(currentUserId).first()
                 val filteredAndSorted = applyFiltersAndSort(petsList)
@@ -154,14 +155,14 @@ class PetViewModel(application: Application) : AndroidViewModel(application) {
             _isLoading.value = true
             try {
                 Timber.d("Starting to add pet: ${pet.name}")
-                
+
                 // Get current user ID
                 val currentUserId = firebaseHelper.getCurrentUserId()
                 if (currentUserId == null) {
                     throw IllegalArgumentException("User not logged in")
                 }
                 pet.userId = currentUserId
-                
+
                 // Validate all required fields
                 if (pet.name.isNullOrBlank()) {
                     throw IllegalArgumentException("Pet name cannot be null or empty")
@@ -175,16 +176,16 @@ class PetViewModel(application: Application) : AndroidViewModel(application) {
                 if (pet.birthDate == null) {
                     throw IllegalArgumentException("Birth date cannot be null")
                 }
-                
+
                 Timber.d("Validated pet details - Name: ${pet.name}, Type: ${pet.type}, Breed: ${pet.breed}, UserId: ${pet.userId}, BirthDate: ${pet.birthDate}")
-                
+
                 // Add pet and get its ID
                 val id = repository.addPet(pet)
-                
+
                 if (id > 0) {
                     Timber.d("Pet added successfully with ID: $id")
                     pet.id = id
-                    
+
                     // Force a refresh to update the UI
                     val petsList = repository.getPetsForUser(currentUserId).first()
                     val filteredAndSorted = applyFiltersAndSort(petsList)
@@ -235,7 +236,7 @@ class PetViewModel(application: Application) : AndroidViewModel(application) {
                     _error.value = "User not logged in"
                     return@launch
                 }
-                
+
                 val petsList = repository.getPetsForUser(currentUserId).first()
                 val filteredAndSorted = applyFiltersAndSort(petsList)
                 _pets.value = filteredAndSorted

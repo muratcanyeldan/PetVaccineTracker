@@ -2,9 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.gms)
     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.gms)
     alias(libs.plugins.ksp)
+    id("kotlin-parcelize")
+    id("org.sonarqube") version "5.1.0.4882"
 }
 
 android {
@@ -25,8 +27,15 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             isMinifyEnabled = false
+            isDebuggable = true
+        }
+
+        release {
+            isMinifyEnabled = true           // ✅ Enable obfuscation
+            isShrinkResources = true         // ✅ Remove unused resources
+            isDebuggable = false            // ✅ Disable debugging
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

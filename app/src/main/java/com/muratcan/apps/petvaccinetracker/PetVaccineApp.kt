@@ -11,7 +11,7 @@ import timber.log.Timber
 class PetVaccineApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        
+
         if (BuildConfig.DEBUG) {
             // Debug logging
             Timber.plant(Timber.DebugTree())
@@ -19,7 +19,7 @@ class PetVaccineApp : Application() {
             // Release logging to Crashlytics
             Timber.plant(CrashlyticsTree())
         }
-        
+
         createNotificationChannel()
     }
 
@@ -34,8 +34,9 @@ class PetVaccineApp : Application() {
                 enableLights(true)
                 enableVibration(true)
             }
-            
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
             Timber.d("Notification channel created")
         }

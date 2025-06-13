@@ -53,10 +53,16 @@ fun MainScreen(
                 title = { Text(stringResource(R.string.app_name)) },
                 actions = {
                     IconButton(onClick = { /* TODO: Implement search */ }) {
-                        Icon(Icons.Default.Search, contentDescription = stringResource(R.string.action_search))
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = stringResource(R.string.action_search)
+                        )
                     }
                     IconButton(onClick = { /* TODO: Implement menu */ }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.action_sort_name))
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = stringResource(R.string.action_sort_name)
+                        )
                     }
                 }
             )
