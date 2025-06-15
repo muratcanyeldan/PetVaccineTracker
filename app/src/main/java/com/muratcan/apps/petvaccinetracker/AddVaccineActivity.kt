@@ -129,8 +129,8 @@ class AddVaccineActivity : AppCompatActivity() {
                 }
 
                 val months =
-                    (nextDueCal.get(Calendar.YEAR) - administeredCal.get(Calendar.YEAR)) * 12 +
-                            (nextDueCal.get(Calendar.MONTH) - administeredCal.get(Calendar.MONTH))
+                    (nextDueCal[Calendar.YEAR] - administeredCal[Calendar.YEAR]) * 12 +
+                            (nextDueCal[Calendar.MONTH] - administeredCal[Calendar.MONTH])
 
                 if (months > 0 && months <= 12) {
                     recurringPeriodInput.setText(getString(R.string.months_format, months), false)
@@ -182,9 +182,9 @@ class AddVaccineActivity : AppCompatActivity() {
         val dialog = DatePickerDialog(
             this,
             dateSetListener,
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            calendar[Calendar.YEAR],
+            calendar[Calendar.MONTH],
+            calendar[Calendar.DAY_OF_MONTH]
         )
         dialog.datePicker.maxDate = System.currentTimeMillis()
         dialog.show()

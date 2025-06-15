@@ -390,9 +390,9 @@ class AddPetActivity : AppCompatActivity() {
                 selectedDate = selectedCal.time
                 birthDateInput.setText(dateFormat.format(selectedDate!!))
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            calendar[Calendar.YEAR],
+            calendar[Calendar.MONTH],
+            calendar[Calendar.DAY_OF_MONTH]
         )
 
         // Set the maximum date to today

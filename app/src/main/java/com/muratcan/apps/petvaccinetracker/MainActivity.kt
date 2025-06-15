@@ -75,14 +75,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Check and request notification permission for Android 13+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
+        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) && (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED)
+        ) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
@@ -99,7 +97,7 @@ class MainActivity : AppCompatActivity() {
 
         // Setup sort button
         val sortButton = findViewById<ImageButton>(R.id.sortButton)
-        sortButton.setOnClickListener { v ->
+        sortButton.setOnClickListener { _ ->
             val popup = PopupMenu(this@MainActivity, sortButton)
             popup.menuInflater.inflate(R.menu.menu_main, popup.menu)
 

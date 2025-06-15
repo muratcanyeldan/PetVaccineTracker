@@ -164,7 +164,7 @@ class PetDetailActivity : AppCompatActivity(), VaccineAdapter.OnVaccineClickList
     }
 
     private fun setupFab() {
-        addVaccineFab.setOnClickListener { v ->
+        addVaccineFab.setOnClickListener { _ ->
             val intent = Intent(this@PetDetailActivity, AddVaccineActivity::class.java).apply {
                 putExtra("pet_id", pet!!.id)
             }

@@ -158,23 +158,25 @@ class PetViewModel(application: Application) : AndroidViewModel(application) {
 
                 // Get current user ID
                 val currentUserId = firebaseHelper.getCurrentUserId()
-                if (currentUserId == null) {
-                    throw IllegalArgumentException("User not logged in")
+                requireNotNull(currentUserId) {
+                    "User not logged in"
                 }
                 pet.userId = currentUserId
 
-                // Validate all required fields
-                if (pet.name.isNullOrBlank()) {
-                    throw IllegalArgumentException("Pet name cannot be null or empty")
+                require(!(pet.name.isNullOrBlank())) {
+                    "Pet name cannot be null or empty"
                 }
-                if (pet.type.isNullOrBlank()) {
-                    throw IllegalArgumentException("Pet type cannot be null or empty")
+
+                require(!(pet.type.isNullOrBlank())) {
+                    "Pet type cannot be null or empty"
                 }
+
                 if (pet.breed.isNullOrBlank()) {
                     pet.breed = "Unknown" // Set a default value for breed if null
                 }
-                if (pet.birthDate == null) {
-                    throw IllegalArgumentException("Birth date cannot be null")
+
+                requireNotNull(pet.birthDate) {
+                    "Birth date cannot be null"
                 }
 
                 Timber.d("Validated pet details - Name: ${pet.name}, Type: ${pet.type}, Breed: ${pet.breed}, UserId: ${pet.userId}, BirthDate: ${pet.birthDate}")
